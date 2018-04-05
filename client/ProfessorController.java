@@ -16,6 +16,7 @@ import data.Course;
 import data.Updatable;
 import message.RequestAssignments;
 import message.RequestCourses;
+import message.RequestStudents;
 import message.UpdateAssignment;
 import message.UpdateCourse;
 
@@ -24,8 +25,6 @@ class ProfessorController {
 	private TableModel table;
 	private ServerConnection server;
 	private AtomicBoolean locked = new AtomicBoolean(true);
-	
-	private int courseId;
 	
 	ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
 		this.view = view;
@@ -51,8 +50,42 @@ class ProfessorController {
 		addSelectionHandler();
 		addCreateAssignmentHandler();
 		addAssignmentBackHandler();
+		addStudentsHandler();
+		addStudentsBackHandler();
 	}
 	
+	private void addStudentsBackHandler() {
+		view.addStudentsBackListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
+				table.clear();
+				try {
+					server.sendObject(new RequestAssignments());
+				} catch (IOException ex) {
+					lostConnection();
+				}
+			}
+		});
+	}
+	
+	private void addStudentsHandler() {
+		view.addStudentsListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				view.selectPage(ProfessorView.STUDENT_PAGE);
+				table.clear();
+				try {
+					server.sendObject(new RequestStudents(false));
+				} catch (IOException e1) {
+					lostConnection();
+				}
+			}
+		});
+	}
+
 	private void addAssignmentBackHandler() {
 		view.addAssignmentBackListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -132,10 +165,10 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
-				courseId = ((Course)table.getRow(view.getSelected())).getId();
+				Course course = (Course)table.getRow(view.getSelected());
 				table.clear();
 				try {
-					server.sendObject(new RequestAssignments(courseId));
+					server.sendObject(new RequestAssignments(course));
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -169,7 +202,7 @@ class ProfessorController {
 			return null;
 		if (name.isEmpty())
 			throw new InvalidParameterException("Assignment name cannot be empty!");
-		return new Assignment(name, courseId);
+		return new Assignment(name);
 	}
 	
 	private void lostConnection() {

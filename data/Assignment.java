@@ -8,21 +8,19 @@ public class Assignment implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
 	private static final String[] COLUMNS = { "Name", "Due", "Active" };
 	private int id;
-	private int courseId;
 	private String title;
 	private boolean active;
 	private String dueDate;
 	
-	public Assignment(int id, int courseId, String title, boolean active, String dueDate) {
+	public Assignment(int id, String title, boolean active, String dueDate) {
 		this.id = id;
-		this.courseId = courseId;
 		this.title = title;
 		this.active = active;
 		this.dueDate = dueDate;
 	}
 	
-	public Assignment(String title, int courseId) {
-		this(NEW_ID, courseId, title, false, "MAR 15 2017");
+	public Assignment(String title) {
+		this(NEW_ID, title, false, "MAR 15 2017");
 	}
 
 	public int getId() {
@@ -31,10 +29,6 @@ public class Assignment implements TableRow, Updatable {
 	
 	public void setId(int id) {
 		this.id = id;
-	}
-	
-	public int getCourseId() {
-		return courseId;
 	}
 	
 	public String getTitle() {

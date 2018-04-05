@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
+import data.Student;
 import message.Request;
 
 public class ClientHandler implements Runnable {
@@ -36,6 +37,10 @@ public class ClientHandler implements Runnable {
 		}
 	}
 	
+	public void selectCourse(int courseId) {
+		database.selectCourse(courseId);
+	}
+	
 	public void sendCourses() throws IOException, SQLException {
 		output.writeObject(database.getCourses());
 	}
@@ -52,8 +57,8 @@ public class ClientHandler implements Runnable {
 		output.writeObject(courseList);
 	}
 	
-	public void sendAssignments(int courseId) throws IOException, SQLException {
-		output.writeObject(database.getAssignments(courseId));
+	public void sendAssignments() throws IOException, SQLException {
+		output.writeObject(database.getAssignments());
 	}
 	
 	public void updateAssignment(Assignment updated) throws SQLException {
@@ -66,6 +71,21 @@ public class ClientHandler implements Runnable {
 		ArrayList<Assignment> assList = new ArrayList<Assignment>();
 		assList.add(assignment);
 		output.writeObject(assList);
+	}
+	
+	public void sendEnrolledStudents() throws IOException, SQLException {
+		output.writeObject(database.getEnrolledStudents());
+	}
+	
+	public void sendAllStudents() throws IOException, SQLException {
+		output.writeObject(database.getAllStudents());
+	}
+	
+	public void updateStudent(Student updated) throws SQLException {
+		if (updated.getEnrolled())
+			database.createEnrollment(updated);
+		else
+			database.deleteEnrollment(updated);
 	}
 	
 	private void login() throws ClassNotFoundException, SQLException, IOException {

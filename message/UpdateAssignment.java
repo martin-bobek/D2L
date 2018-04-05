@@ -8,7 +8,7 @@ import server.ClientHandler;
 
 public class UpdateAssignment implements Request {
 	private static final long serialVersionUID = 1L;
-	private Assignment assignment;
+	private final Assignment assignment;
 	
 	public UpdateAssignment(Assignment assignment) {
 		this.assignment = assignment;

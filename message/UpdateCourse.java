@@ -8,7 +8,7 @@ import server.ClientHandler;
 
 public class UpdateCourse implements Request {
 	private static final long serialVersionUID = 1L;
-	private Course course;
+	private final Course course;
 
 	public UpdateCourse(Course course) {
 		this.course = course;

@@ -22,13 +22,14 @@ class ProfessorView extends JFrame {
 	static final int NO_SELECTION = -1;
 	static final int COURSE_PAGE = 0;
 	static final int ASSIGNMENT_PAGE = 1;
-	private static final int NUM_PAGES = 2;
-	private static final String HEADERS[] = { "Courses", "Assignments" };
+	static final int STUDENT_PAGE = 2;
+	private static final int NUM_PAGES = 3;
+	private static final String HEADERS[] = { "Courses", "Assignments", "Students" };
 	
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn;
+	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, studentsBtn, studentsBackBtn;
 	private JTable table;
 
 	ProfessorView(TableModel table) {
@@ -46,7 +47,7 @@ class ProfessorView extends JFrame {
 	void selectPage(int page) {
 		header.setText(HEADERS[page]);
 		remove(buttonPanels[this.page]);
-		add("South", buttonPanels[page]);
+		add(buttonPanels[page], BorderLayout.SOUTH);
 		repaint();
 		this.page = page;
 		itemDeselected();
@@ -62,6 +63,14 @@ class ProfessorView extends JFrame {
 		if (page == COURSE_PAGE) {
 			viewBtn.setEnabled(false);
 		}
+	}
+	
+	void addStudentsBackListener(ActionListener listener) {
+		studentsBackBtn.addActionListener(listener);
+	}
+	
+	void addStudentsListener(ActionListener listener) {
+		studentsBtn.addActionListener(listener);
 	}
 	
 	void addAssignmentBackListener(ActionListener listener) {
@@ -94,8 +103,9 @@ class ProfessorView extends JFrame {
 	private void layoutButtonPanels() {
 		buttonPanels[COURSE_PAGE] = createHomeButtons();
 		buttonPanels[ASSIGNMENT_PAGE] = createAssignmentButtons();
+		buttonPanels[STUDENT_PAGE] = createStudentButtons();
 	}
-	
+
 	private JLabel createHeader(String title) {
 		header = new JLabel(title, SwingConstants.CENTER);
 		header.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -125,8 +135,26 @@ class ProfessorView extends JFrame {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.add(new JButton("Dropbox"));
 		panel.add(createAssignmentBtn = new JButton("Upload"));
-		panel.add(new JButton("Students"));
+		panel.add(studentsBtn = new JButton("Students"));
 		panel.add(assignmentBackBtn = new JButton("Back"));
 		return panel;
 	}
+	
+	private JPanel createStudentButtons() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		panel.add(new JButton("Search"));
+		panel.add(studentsBackBtn = new JButton("Back"));
+		return panel;
+	}
+	/*
+	private JCheckBox addCheckBox(JPanel panel, String label) {
+		JPanel checkPanel = new JPanel();
+		JCheckBox checkBox = new JCheckBox();
+		checkPanel.setBorder(BorderFactory.createEtchedBorder());
+		checkPanel.add(new JLabel(label));
+		checkPanel.add(checkBox);
+		panel.add(checkPanel);
+		return checkBox;
+	}
+	*/
 }
