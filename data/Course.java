@@ -2,8 +2,9 @@ package data;
 
 import java.io.Serializable;
 
-public class Course implements Serializable {
+public class Course implements Serializable, TableRow {
 	private static final long serialVersionUID = 1L;
+	private static final String[] COLUMNS = { "Name", "Active" };
 	public static final int NEW_ID = -1;
 	private int id;
 	private String name;
@@ -41,5 +42,29 @@ public class Course implements Serializable {
 	
 	public String toString() {
 		return name + "   -   " + (active ? "active" : "inactive");
+	}
+	
+	public int getNumColumns() {
+		return 2;
+	}
+
+	public Object getColumn(int index) {
+		if (index == 0)
+			return name;
+		if (index == 1)
+			return active;
+		return null;
+	}
+	
+	public String getColumnName(int index) {
+		return COLUMNS[index];
+	}
+
+	public Class<?> getColumnType(int index) {
+		if (index == 0)
+			return STRING;
+		if (index == 1)
+			return CHECKBOX;
+		return null;
 	}
 }

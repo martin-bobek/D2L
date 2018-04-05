@@ -8,18 +8,18 @@ import java.awt.event.ActionListener;
 import java.io.Serializable;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
 import data.Course;
+import data.TableRow;
 
 class ProfessorView extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -32,24 +32,25 @@ class ProfessorView extends JFrame {
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
 	private JButton viewBtn, courseActiveBtn, createCourseBtn;
-	private JList<Serializable> list;
+	private JTable table;
 
 	ProfessorView(ServerConnection server) {
 		super("Professor Client");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
-		list.setModel(server.getList());
+		table.setModel(server.getList());
 		setMinimumSize(new Dimension(500, 500));
 	}
 	
-	Serializable getSelectedItem() {
-		return list.getSelectedValue();
+	TableRow getSelectedItem() {
+		int row = table.getSelectedRow();
+		if (row == -1)
+			return null;
+		return ((TableModel)table.getModel()).getRow(row); // TODO - Remove this vile code!
 	}
 	
 	void updateSelectedItem(Serializable item) {
-		DefaultListModel<Serializable> model = (DefaultListModel<Serializable>)list.getModel();
-		int index = list.getSelectedIndex();
-		model.setElementAt(item, index);
+		((TableModel)table.getModel()).updateRow(table.getSelectedRow()); // TODO - Remove this vile code!
 	}
 	
 	void selectPage(int page) {
@@ -64,7 +65,7 @@ class ProfessorView extends JFrame {
 		if (page == COURSE_PAGE) {
 			viewBtn.setEnabled(true);
 			courseActiveBtn.setEnabled(true);
-			setCourseActiveButtonText(((Course)list.getSelectedValue()).getActive());
+			setCourseActiveButtonText(((Course)getSelectedItem()).getActive()); // TODO - Remove this vile code!
 		}
 	}
 	
@@ -92,7 +93,7 @@ class ProfessorView extends JFrame {
 	}
 	
 	void addSelectionListener(ListSelectionListener listener) {
-		list.getSelectionModel().addListSelectionListener(listener);
+		table.getSelectionModel().addListSelectionListener(listener);
 	}
 	
 	private void layoutFrame() {
@@ -115,10 +116,11 @@ class ProfessorView extends JFrame {
 	}
 	
 	private JPanel createTextArea() {
-		list = new JList<Serializable>();
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table = new JTable();
+		table.setFillsViewportHeight(true);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JPanel scrollList = new JPanel(new BorderLayout());
-		scrollList.add(new JScrollPane(list), BorderLayout.CENTER);
+		scrollList.add(new JScrollPane(table), BorderLayout.CENTER);
 		scrollList.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 		return scrollList;
 	}
