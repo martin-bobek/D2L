@@ -1,8 +1,9 @@
 package data;
 
-import java.io.Serializable;
+import message.Request;
+import message.UpdateCourse;
 
-public class Course implements Serializable, TableRow {
+public class Course implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
 	private static final String[] COLUMNS = { "Name", "Active" };
 	public static final int NEW_ID = -1;
@@ -40,10 +41,6 @@ public class Course implements Serializable, TableRow {
 		this.active = active;
 	}
 	
-	public String toString() {
-		return name + "   -   " + (active ? "active" : "inactive");
-	}
-	
 	public int getNumColumns() {
 		return 2;
 	}
@@ -61,10 +58,21 @@ public class Course implements Serializable, TableRow {
 	}
 
 	public Class<?> getColumnType(int index) {
-		if (index == 0)
-			return STRING;
 		if (index == 1)
 			return CHECKBOX;
-		return null;
+		return STRING;
+	}
+	
+	public boolean getColumnEditable(int index) {
+		return index == 1;
+	}
+
+	public void setColumn(Object value, int index) {
+		if (index == 1)
+			active = (boolean)value;
+	}
+	
+	public Request createRequest() {
+		return new UpdateCourse(this);
 	}
 }

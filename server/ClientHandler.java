@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
 import message.Request;
@@ -51,8 +52,20 @@ public class ClientHandler implements Runnable {
 		output.writeObject(courseList);
 	}
 	
-	public void sendAssignments() throws IOException, SQLException {
-		output.writeObject(database.getAssignments());
+	public void sendAssignments(int courseId) throws IOException, SQLException {
+		output.writeObject(database.getAssignments(courseId));
+	}
+	
+	public void updateAssignment(Assignment updated) throws SQLException {
+		database.updateAssignment(updated);
+	}
+	
+	public void createAssignment(Assignment assignment) throws SQLException, IOException {
+		database.createAssignment(assignment);
+		assignment.setId(database.getLastId());
+		ArrayList<Assignment> assList = new ArrayList<Assignment>();
+		assList.add(assignment);
+		output.writeObject(assList);
 	}
 	
 	private void login() throws ClassNotFoundException, SQLException, IOException {

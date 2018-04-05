@@ -13,8 +13,9 @@ class Client {
 			LoginDialog login = new LoginDialog(server);
 			char type = login.login();
 			if (type == LoginCredentials.PROFESSOR) {
-				view = new ProfessorView(server);
-				ProfessorController controller = new ProfessorController(view, server);
+				TableModel table = new TableModel();
+				view = new ProfessorView(table);
+				ProfessorController controller = new ProfessorController(view, table, server);
 				controller.runClient();
 			} else {
 				JOptionPane.showMessageDialog(view, "User type " + type + " not supported!");

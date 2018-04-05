@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -18,11 +17,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
-import data.Course;
-import data.TableRow;
-
 class ProfessorView extends JFrame {
 	private static final long serialVersionUID = 1L;
+	static final int NO_SELECTION = -1;
 	static final int COURSE_PAGE = 0;
 	static final int ASSIGNMENT_PAGE = 1;
 	private static final int NUM_PAGES = 2;
@@ -31,65 +28,56 @@ class ProfessorView extends JFrame {
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton viewBtn, courseActiveBtn, createCourseBtn;
+	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn;
 	private JTable table;
 
-	ProfessorView(ServerConnection server) {
+	ProfessorView(TableModel table) {
 		super("Professor Client");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
-		table.setModel(server.getList());
+		this.table.setModel(table);
 		setMinimumSize(new Dimension(500, 500));
 	}
 	
-	TableRow getSelectedItem() {
-		int row = table.getSelectedRow();
-		if (row == -1)
-			return null;
-		return ((TableModel)table.getModel()).getRow(row); // TODO - Remove this vile code!
-	}
-	
-	void updateSelectedItem(Serializable item) {
-		((TableModel)table.getModel()).updateRow(table.getSelectedRow()); // TODO - Remove this vile code!
+	int getSelected() {
+		return table.getSelectedRow();
 	}
 	
 	void selectPage(int page) {
 		header.setText(HEADERS[page]);
 		remove(buttonPanels[this.page]);
 		add("South", buttonPanels[page]);
-		validate();
+		repaint();
 		this.page = page;
+		itemDeselected();
 	}
 	
 	void itemSelected() {
 		if (page == COURSE_PAGE) {
 			viewBtn.setEnabled(true);
-			courseActiveBtn.setEnabled(true);
-			setCourseActiveButtonText(((Course)getSelectedItem()).getActive()); // TODO - Remove this vile code!
 		}
 	}
 	
 	void itemDeselected() {
 		if (page == COURSE_PAGE) {
 			viewBtn.setEnabled(false);
-			courseActiveBtn.setEnabled(false);
 		}
 	}
 	
-	void setCourseActiveButtonText(boolean courseActive) {
-		courseActiveBtn.setText(courseActive ? "Deactivate" : "Activate");
+	void addAssignmentBackListener(ActionListener listener) {
+		assignmentBackBtn.addActionListener(listener);
 	}
 	
-	void addCreateCourseHandler(ActionListener listener) {
+	void addCreateCourseListener(ActionListener listener) {
 		createCourseBtn.addActionListener(listener);
+	}
+	
+	void addCreateAssignmentListener(ActionListener listener) {
+		createAssignmentBtn.addActionListener(listener);
 	}
 	
 	void addViewListener(ActionListener listener) {
 		viewBtn.addActionListener(listener);
-	}
-	
-	void addCourseActiveListener(ActionListener listener) {
-		courseActiveBtn.addActionListener(listener);
 	}
 	
 	void addSelectionListener(ListSelectionListener listener) {
@@ -129,18 +117,16 @@ class ProfessorView extends JFrame {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.add(viewBtn = new JButton("View"));
 		viewBtn.setEnabled(false);
-		panel.add(courseActiveBtn = new JButton("Activate"));
-		courseActiveBtn.setEnabled(false);
 		panel.add(createCourseBtn = new JButton("Create"));
 		return panel;
 	}
 	
 	private JPanel createAssignmentButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-		panel.add(new JButton("Upload"));
-		panel.add(new JButton("Activate"));
 		panel.add(new JButton("Dropbox"));
+		panel.add(createAssignmentBtn = new JButton("Upload"));
 		panel.add(new JButton("Students"));
+		panel.add(assignmentBackBtn = new JButton("Back"));
 		return panel;
 	}
 }

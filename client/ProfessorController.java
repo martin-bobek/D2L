@@ -8,19 +8,29 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
+import data.Assignment;
 import data.Course;
+import data.Updatable;
 import message.RequestAssignments;
 import message.RequestCourses;
+import message.UpdateAssignment;
 import message.UpdateCourse;
 
 class ProfessorController {
 	private ProfessorView view;
+	private TableModel table;
 	private ServerConnection server;
 	private AtomicBoolean locked = new AtomicBoolean(true);
 	
-	ProfessorController(ProfessorView view, ServerConnection server) {
+	private int courseId;
+	
+	ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
 		this.view = view;
+		server.addTable(table);
+		this.table = table;
 		this.server = server;
 		subscribeHandlers();
 	}
@@ -36,25 +46,81 @@ class ProfessorController {
 	
 	private void subscribeHandlers() {
 		addViewHandler();
-		addCourseActiveHandler();
+		addTableChangedHandler();
 		addCreateCourseHandler();
 		addSelectionHandler();
+		addCreateAssignmentHandler();
+		addAssignmentBackHandler();
+	}
+	
+	private void addAssignmentBackHandler() {
+		view.addAssignmentBackListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				view.selectPage(ProfessorView.COURSE_PAGE);
+				table.clear();
+				try {
+					server.sendObject(new RequestCourses());
+				} catch (IOException ex) {
+					lostConnection();
+				}
+			}
+		});
+	}
+
+	private void addTableChangedHandler() {
+		table.addTableModelListener(new TableModelListener() {
+			public void tableChanged(TableModelEvent e) {
+				if (e.getColumn() == TableModelEvent.ALL_COLUMNS)
+					return;
+				Updatable row = (Updatable)table.getRow(e.getFirstRow());
+				try {
+					server.sendObject(row.createRequest());
+				} catch (IOException ex) {
+					lostConnection();
+				}
+			}
+		});
 	}
 	
 	private void addCreateCourseHandler() {
-		view.addCreateCourseHandler(new ActionListener() {
+		view.addCreateCourseListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!locked.compareAndSet(false, true))
 					return;
 				try {
 					Course course = showCourseDialog();
-					server.sendObject(new UpdateCourse(course));
+					if (course == null)
+						locked.set(false);
+					else
+						server.sendObject(new UpdateCourse(course));
 				} catch (InvalidParameterException ex) {
 					locked.set(false);
 					JOptionPane.showMessageDialog(view, ex.getMessage());
 				} catch (IOException ex) {
-					JOptionPane.showMessageDialog(view, "Lost connection to server!");
-					System.exit(1);
+					lostConnection();
+				}
+			}
+		});
+	}
+	
+	private void addCreateAssignmentHandler() {
+		view.addCreateAssignmentListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				try {
+					Assignment assignment = showAssignmentDialog();
+					if (assignment == null)
+						locked.set(false);
+					else
+						server.sendObject(new UpdateAssignment(assignment));
+				} catch (InvalidParameterException ex) {
+					locked.set(false);
+					JOptionPane.showMessageDialog(view, ex.getMessage());
+				} catch (IOException ex) {
+					lostConnection();
 				}
 			}
 		});
@@ -66,29 +132,12 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
+				courseId = ((Course)table.getRow(view.getSelected())).getId();
+				table.clear();
 				try {
-					server.clearList();
-					server.sendObject(new RequestAssignments());
+					server.sendObject(new RequestAssignments(courseId));
 				} catch (IOException ex) {
-					JOptionPane.showMessageDialog(view, "Lost connection to server!");
-					System.exit(1);
-				}
-			}
-		});
-	}
-	
-	private void addCourseActiveHandler() {
-		view.addCourseActiveListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Course course = (Course)view.getSelectedItem();
-				course.setActive(!course.getActive());
-				view.updateSelectedItem(course);
-				view.setCourseActiveButtonText(course.getActive());
-				try {
-					server.sendObject(new UpdateCourse(course));
-				} catch (IOException ex) {
-					JOptionPane.showMessageDialog(view, "Lost connection to server!");
-					System.exit(1);
+					lostConnection();
 				}
 			}
 		});
@@ -97,7 +146,7 @@ class ProfessorController {
 	private void addSelectionHandler() {
 		view.addSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				if (view.getSelectedItem() == null)
+				if (view.getSelected() == ProfessorView.NO_SELECTION)
 					view.itemDeselected();
 				else
 					view.itemSelected();
@@ -107,8 +156,24 @@ class ProfessorController {
 	
 	private Course showCourseDialog() throws InvalidParameterException {
 		String name = JOptionPane.showInputDialog(view, "Course Name:", "Create Course", JOptionPane.PLAIN_MESSAGE);
-		if (name == null || name.isEmpty())
+		if (name == null)
+			return null;
+		if (name.isEmpty())
 			throw new InvalidParameterException("Course name cannot be empty!");
 		return new Course(name);
+	}
+	
+	private Assignment showAssignmentDialog() throws InvalidParameterException {
+		String name = JOptionPane.showInputDialog(view, "Assignment Name:", "Create Assignment", JOptionPane.PLAIN_MESSAGE);
+		if (name == null)
+			return null;
+		if (name.isEmpty())
+			throw new InvalidParameterException("Assignment name cannot be empty!");
+		return new Assignment(name, courseId);
+	}
+	
+	private void lostConnection() {
+		JOptionPane.showMessageDialog(view, "Lost connection to server!");
+		System.exit(1);
 	}
 }

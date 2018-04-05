@@ -55,4 +55,13 @@ class TableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(int col) {
 		return rows.get(0).getColumnType(col);	
 	}
+	
+	public boolean isCellEditable(int row, int col) {
+		return rows.get(0).getColumnEditable(col);
+	}
+	
+	public void setValueAt(Object value, int row, int col) {
+		rows.get(row).setColumn(value, col);
+		fireTableCellUpdated(row, col);
+	}
 }

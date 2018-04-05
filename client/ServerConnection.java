@@ -19,15 +19,10 @@ class ServerConnection {
 		socket = new Socket("localhost", 9898);
 		input = new ObjectInputStream(socket.getInputStream());
 		output = new ObjectOutputStream(socket.getOutputStream());
-		list = new TableModel();
 	}
 	
-	TableModel getList() {
-		return list;
-	}
-	
-	void clearList() {
-		list.clear();
+	void addTable(TableModel table) {
+		list = table;
 	}
 	
 	void receiveList() throws ClassNotFoundException, IOException {
@@ -42,6 +37,7 @@ class ServerConnection {
 	}
 	
 	void sendObject(Serializable obj) throws IOException {
+		output.reset();
 		output.writeObject(obj);
 	}
 }

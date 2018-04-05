@@ -63,12 +63,31 @@ class DatabaseManager {
 		statement.executeUpdate();
 	}
 	
-	ArrayList<Assignment> getAssignments() throws SQLException {
-		results = connection.prepareStatement("SELECT ID, TITLE, ACTIVE, DUE_DATE FROM ASSIGNMENT").executeQuery();
+	ArrayList<Assignment> getAssignments(int courseId) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("SELECT ID, TITLE, ACTIVE, DUE_DATE FROM ASSIGNMENT WHERE COURSE_ID = ?");
+		statement.setInt(1, courseId);
+		results = statement.executeQuery();
 		ArrayList<Assignment> assignments = new ArrayList<Assignment>();
 		while (results.next())
-			assignments.add(new Assignment(results.getInt(1), results.getString(2), results.getBoolean(3), results.getString(4)));
+			assignments.add(new Assignment(results.getInt(1), courseId, results.getString(2), results.getBoolean(3), results.getString(4)));
 		return assignments;
+	}
+	
+	public void updateAssignment(Assignment updated) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("UPDATE ASSIGNMENT SET ACTIVE = ? WHERE ID = ?");
+		statement.setBoolean(1, updated.getActive());
+		statement.setInt(2, updated.getId());
+		statement.executeUpdate();
+	}
+
+	public void createAssignment(Assignment assignment) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("INSERT INTO ASSIGNMENT (COURSE_ID, TITLE, PATH, ACTIVE, DUE_DATE) VALUES (?, ?, ?, ?, ?)");
+		statement.setInt(1, assignment.getCourseId());
+		statement.setString(2, assignment.getTitle());
+		statement.setString(3, "");
+		statement.setBoolean(4, assignment.getActive());
+		statement.setString(5, assignment.getDueDate());
+		statement.executeUpdate();
 	}
 	
 	int getLastId() throws SQLException {

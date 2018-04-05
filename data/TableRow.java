@@ -6,6 +6,8 @@ public interface TableRow {
 	
 	public int getNumColumns();
 	public Object getColumn(int index);
+	public void setColumn(Object value, int index);
 	public String getColumnName(int index);
 	public Class<?> getColumnType(int index);
+	public boolean getColumnEditable(int index);
 }
