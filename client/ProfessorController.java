@@ -31,6 +31,8 @@ class ProfessorController {
 	private FileHelper fileHelper;
 	private AtomicBoolean locked = new AtomicBoolean(true);
 	
+	private RequestStudents search = new RequestStudents();
+	
 	ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
 		table.reset(Course.ROW_PROPERTIES);
 		server.addTable(table);
@@ -59,8 +61,66 @@ class ProfessorController {
 		addAssignmentBackHandler();
 		addStudentsHandler();
 		addStudentsBackHandler();
+		addAllStudentsHandler();
+		addSearchHandler();
+		addClearSearchHandler();
 	}
 	
+	private void addClearSearchHandler() {
+		view.addClearSearchListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				view.setClearSearchEnabled(false);
+				search = new RequestStudents();
+				search.setAll(view.getAllStudents());
+				table.clear();
+				try {
+					server.sendObject(search);
+				} catch (IOException e1) {
+					lostConnection();
+				}
+			}
+		});
+	}
+
+	private void addSearchHandler() {
+		view.addSearchListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				if ((search = SearchDialog.showSearchDialog(view)) == null) {
+					locked.set(false);
+					return;
+				}
+				view.setClearSearchEnabled(true);
+				search.setAll(view.getAllStudents());
+				table.clear();
+				try {
+					server.sendObject(search);
+				} catch (IOException e1) {
+					lostConnection();
+				}
+			}
+		});
+	}
+	
+	private void addAllStudentsHandler() {
+		view.addAllStudentsListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				table.clear();
+				search.setAll(view.getAllStudents());
+				try {
+					server.sendObject(search);
+				} catch (IOException ex) {
+					lostConnection();
+				}
+			}			
+		});
+	}
+
 	private void addStudentsBackHandler() {
 		view.addStudentsBackListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -84,8 +144,11 @@ class ProfessorController {
 					return;
 				view.selectPage(ProfessorView.STUDENT_PAGE);
 				table.reset(Student.ROW_PROPERTIES);
+				search = new RequestStudents();
+				view.setAllStudents(false);
+				view.setClearSearchEnabled(false);
 				try {
-					server.sendObject(new RequestStudents(false));
+					server.sendObject(search);
 				} catch (IOException e1) {
 					lostConnection();
 				}
@@ -199,17 +262,6 @@ class ProfessorController {
 			throw new InvalidParameterException("Course name cannot be empty!");
 		return new Course(name);
 	}
-	
-	/*
-	private Assignment showAssignmentDialog() throws InvalidParameterException {
-		String name = JOptionPane.showInputDialog(view, "Assignment Name:", "Create Assignment", JOptionPane.PLAIN_MESSAGE);
-		if (name == null)
-			return null;
-		if (name.isEmpty())
-			throw new InvalidParameterException("Assignment name cannot be empty!");
-		return new Assignment(name);
-	}
-	*/
 	
 	private void lostConnection() {
 		JOptionPane.showMessageDialog(view, "Lost connection to server!");

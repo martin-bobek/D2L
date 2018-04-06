@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,7 +32,8 @@ class ProfessorView extends JFrame {
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, studentsBtn, studentsBackBtn;
+	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn;
+	private JCheckBox allStudentsChk;
 	private JTable table;
 
 	ProfessorView(TableModel table) {
@@ -40,6 +42,18 @@ class ProfessorView extends JFrame {
 		layoutFrame();
 		this.table.setModel(table);
 		setMinimumSize(new Dimension(500, 500));
+	}
+	
+	void setClearSearchEnabled(boolean enabled) {
+		clearSearchBtn.setEnabled(enabled);
+	}
+	
+	void setAllStudents(boolean all) {
+		allStudentsChk.setSelected(all);
+	}
+	
+	boolean getAllStudents() {
+		return allStudentsChk.isSelected();
 	}
 	
 	int getSelected() {
@@ -58,13 +72,29 @@ class ProfessorView extends JFrame {
 	void itemSelected() {
 		if (page == COURSE_PAGE) {
 			viewBtn.setEnabled(true);
+		} else if (page == ASSIGNMENT_PAGE) {
+			dropboxBtn.setEnabled(true);
 		}
 	}
 	
 	void itemDeselected() {
 		if (page == COURSE_PAGE) {
 			viewBtn.setEnabled(false);
+		} else if (page == ASSIGNMENT_PAGE) {
+			dropboxBtn.setEnabled(false);
 		}
+	}
+	
+	void addClearSearchListener(ActionListener listener) {
+		clearSearchBtn.addActionListener(listener);
+	}
+	
+	void addSearchListener(ActionListener listener) {
+		searchBtn.addActionListener(listener);
+	}
+	
+	void addAllStudentsListener(ActionListener listener) {
+		allStudentsChk.addActionListener(listener);
 	}
 	
 	void addStudentsBackListener(ActionListener listener) {
@@ -135,7 +165,7 @@ class ProfessorView extends JFrame {
 	
 	private JPanel createAssignmentButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-		panel.add(new JButton("Dropbox"));
+		panel.add(dropboxBtn = new JButton("Dropbox"));
 		panel.add(createAssignmentBtn = new JButton("Upload"));
 		panel.add(studentsBtn = new JButton("Students"));
 		panel.add(assignmentBackBtn = new JButton("Back"));
@@ -144,19 +174,19 @@ class ProfessorView extends JFrame {
 	
 	private JPanel createStudentButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-		panel.add(new JButton("Search"));
+		allStudentsChk = addCheckBox(panel, "All");
+		panel.add(searchBtn = new JButton("Search"));
+		panel.add(clearSearchBtn = new JButton("Clear Search"));
 		panel.add(studentsBackBtn = new JButton("Back"));
 		return panel;
 	}
-	/*
+	
 	private JCheckBox addCheckBox(JPanel panel, String label) {
-		JPanel checkPanel = new JPanel();
+		JPanel checkPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		JCheckBox checkBox = new JCheckBox();
-		checkPanel.setBorder(BorderFactory.createEtchedBorder());
 		checkPanel.add(new JLabel(label));
 		checkPanel.add(checkBox);
 		panel.add(checkPanel);
 		return checkBox;
 	}
-	*/
 }

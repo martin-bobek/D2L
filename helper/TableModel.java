@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
+import data.RowProperties;
+import data.TableRow;
+
 public class TableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;	
 	private ArrayList<TableRow> rows;
@@ -15,6 +18,13 @@ public class TableModel extends AbstractTableModel {
 	
 	void updateRow(int row) {
 		fireTableRowsUpdated(row, row);
+	}
+	
+	public void clear() {
+		int size = rows.size();
+		rows.clear();
+		if (size != 0)
+			fireTableRowsDeleted(0, size - 1);
 	}
 	
 	public void reset(RowProperties properties) {

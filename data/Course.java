@@ -1,7 +1,5 @@
 package data;
 
-import helper.RowProperties;
-import helper.TableRow;
 import message.Request;
 import message.UpdateCourse;
 

@@ -1,4 +1,4 @@
-package helper;
+package data;
 
 public interface TableRow {
 	public Object getColumn(int index);

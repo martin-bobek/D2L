@@ -13,13 +13,14 @@ import data.LoginCredentials;
 import data.Student;
 import message.Request;
 import message.RequestHandler;
+import message.RequestStudents;
 
 public class ClientHandler implements Runnable, RequestHandler {
 	private final static String FILE_STORAGE = "C:\\Users\\Martin\\Desktop\\AppStorage"; 
-	ObjectInputStream input;
-	ObjectOutputStream output;
-	DatabaseManager database;
-	FileManager files;
+	private ObjectInputStream input;
+	private ObjectOutputStream output;
+	private DatabaseManager database;
+	private FileManager files;
 	
 	ClientHandler(Socket socket) throws IOException, SQLException {
 		output = new ObjectOutputStream(socket.getOutputStream());
@@ -79,12 +80,24 @@ public class ClientHandler implements Runnable, RequestHandler {
 		output.writeObject(assList);
 	}
 	
-	public void sendEnrolledStudents() throws IOException, SQLException {
-		output.writeObject(database.getEnrolledStudents());
+	public void sendEnrolledStudents(int type, Object parameter) throws IOException, SQLException {
+		if (type == RequestStudents.NAME)
+			database.getEnrolledStudents((String)parameter);
+		else if (type == RequestStudents.ID)
+			database.getEnrolledStudents((int)parameter);
+		else
+			database.getEnrolledStudents();
+		output.writeObject(database.getStudents(false));
 	}
 	
-	public void sendAllStudents() throws IOException, SQLException {
-		output.writeObject(database.getAllStudents());
+	public void sendAllStudents(int type, Object parameter) throws IOException, SQLException {
+		if (type == RequestStudents.NAME)
+			database.getAllStudents((String)parameter);
+		else if (type == RequestStudents.ID)
+			database.getAllStudents((int)parameter);
+		else
+			database.getAllStudents();
+		output.writeObject(database.getStudents(true));
 	}
 	
 	public void updateStudent(Student updated) throws SQLException {

@@ -5,16 +5,32 @@ import java.sql.SQLException;
 
 public class RequestStudents implements Request {
 	private static final long serialVersionUID = 1L;
-	private final boolean onlyEnrolled;
+	public static final int NONE = 0;
+	public static final int ID = 1;
+	public static final int NAME = 2;
+	private final Object parameter;
+	private final int type;
+	private boolean all;
 	
-	public RequestStudents(boolean onlyEnrolled) {
-		this.onlyEnrolled = onlyEnrolled;
+	public RequestStudents(int type, Object parameter) {
+		this.type = type;
+		this.parameter = parameter;
+	}
+	
+	public RequestStudents() {
+		parameter = null;
+		type = NONE;
+		all = false;
+	}
+	
+	public void setAll(boolean all) {
+		this.all = all;
 	}
 	
 	public void performAction(RequestHandler server) throws IOException, SQLException {
-		if (onlyEnrolled)
-			server.sendEnrolledStudents();
+		if (all)
+			server.sendAllStudents(type, parameter);
 		else
-			server.sendAllStudents();
+			server.sendEnrolledStudents(type, parameter);
 	}
 }

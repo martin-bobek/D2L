@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import data.TableRow;
 import helper.TableModel;
 
 public class ServerConnection {

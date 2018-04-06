@@ -60,7 +60,7 @@ class LoginDialog extends JFrame {
 				if (!locked.compareAndSet(false, true))
 					return;
 				try {
-					server.sendObject(new LoginCredentials(userIdTxt.getText(), passwordTxt.getPassword()));
+					server.sendObject(validateInput());
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(this_, "Lost connection to server!");
 					System.exit(1);
@@ -104,5 +104,19 @@ class LoginDialog extends JFrame {
 		constraints.anchor = GridBagConstraints.LINE_START;
 		constraints.fill = GridBagConstraints.NONE;
 		return constraints;
+	}
+	
+	private LoginCredentials validateInput() throws InvalidParameterException {
+		String userId = userIdTxt.getText();
+		char[] password = passwordTxt.getPassword();
+		if (userId == null || userId.length() != 6)
+			throw new InvalidParameterException("User ID must be 6 digits!");
+		if (password == null || password.length == 0)
+			throw new InvalidParameterException("Password cannot be empty!");		
+		try {
+			return new LoginCredentials(Integer.parseInt(userId), new String(password));
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterException("Invalid User ID!");
+		}
 	}
 }

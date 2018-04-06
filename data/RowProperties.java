@@ -1,4 +1,4 @@
-package helper;
+package data;
 
 public class RowProperties {
 	public static final Class<?> STRING = String.class;

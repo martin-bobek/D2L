@@ -95,23 +95,50 @@ class DatabaseManager {
 		statement.executeUpdate();
 	}
 	
-	ArrayList<Student> getAllStudents() throws SQLException {
+	void getAllStudents(String name) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME, CASE WHEN SE.STUDENT_ID IS NULL THEN 0b0 ELSE 0b1 END ENROLLED FROM USER U LEFT JOIN STUDENT_ENROLLMENT SE ON U.ID = SE.STUDENT_ID AND SE.COURSE_ID = ? WHERE U.TYPE = 'S' AND U.LASTNAME = ? ORDER BY U.ID");
+		statement.setInt(1, courseId);
+		statement.setString(2, name);
+		results = statement.executeQuery();
+	}
+	
+	void getAllStudents(int id) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME, CASE WHEN SE.STUDENT_ID IS NULL THEN 0b0 ELSE 0b1 END ENROLLED FROM USER U LEFT JOIN STUDENT_ENROLLMENT SE ON U.ID = SE.STUDENT_ID AND SE.COURSE_ID = ? WHERE U.TYPE = 'S' AND U.ID = ? ORDER BY U.ID");
+		statement.setInt(1, courseId);
+		statement.setInt(2, id);
+		results = statement.executeQuery();
+	}
+	
+	void getAllStudents() throws SQLException {
 		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME, CASE WHEN SE.STUDENT_ID IS NULL THEN 0b0 ELSE 0b1 END ENROLLED FROM USER U LEFT JOIN STUDENT_ENROLLMENT SE ON U.ID = SE.STUDENT_ID AND SE.COURSE_ID = ? WHERE U.TYPE = 'S' ORDER BY U.ID");
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
-		ArrayList<Student> students = new ArrayList<Student>();
-		while (results.next())
-			students.add(new Student(results.getInt(1), results.getString(2), results.getString(3), results.getBoolean(4)));
-		return students;
 	}
 	
-	ArrayList<Student> getEnrolledStudents() throws SQLException {
+	void getEnrolledStudents(String name) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME FROM USER U JOIN STUDENT_ENROLLMENT E ON U.ID = E.STUDENT_ID WHERE E.COURSE_ID = ? AND U.LASTNAME = ? ORDER BY U.ID");
+		statement.setInt(1, courseId);
+		statement.setString(2, name);
+		results = statement.executeQuery();
+	}
+	
+	void getEnrolledStudents(int id) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME FROM USER U JOIN STUDENT_ENROLLMENT E ON U.ID = E.STUDENT_ID WHERE E.COURSE_ID = ? AND U.ID = ? ORDER BY U.ID");
+		statement.setInt(1, courseId);
+		statement.setInt(2, id);
+		results = statement.executeQuery();
+	}
+	
+	void getEnrolledStudents() throws SQLException {
 		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME FROM USER U JOIN STUDENT_ENROLLMENT E ON U.ID = E.STUDENT_ID WHERE E.COURSE_ID = ? ORDER BY U.ID");
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
+	}
+	
+	ArrayList<Student> getStudents(boolean all) throws SQLException {
 		ArrayList<Student> students = new ArrayList<Student>();
 		while (results.next())
-			students.add(new Student(results.getInt(1), results.getString(2), results.getString(3), true));
+			students.add(new Student(results.getInt(1), results.getString(2), results.getString(3), all ? results.getBoolean(4) : true ));
 		return students;
 	}
 	

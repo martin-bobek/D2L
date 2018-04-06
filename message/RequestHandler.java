@@ -15,7 +15,7 @@ public interface RequestHandler {
 	public void sendAssignments() throws IOException, SQLException;
 	public void updateAssignment(Assignment updated) throws SQLException;
 	public void createAssignment(Assignment assignment) throws SQLException, IOException;
-	public void sendEnrolledStudents() throws IOException, SQLException;
-	public void sendAllStudents() throws IOException, SQLException;
+	public void sendEnrolledStudents(int type, Object parameter) throws IOException, SQLException;
+	public void sendAllStudents(int type, Object parameter) throws IOException, SQLException;
 	public void updateStudent(Student updated) throws SQLException;
 }
