@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -31,7 +32,7 @@ class AssignmentDialog extends JDialog {
 	private final FileHelper fileHelper;
 	private JTextField nameTxt, fileTxt, dayTxt, yearTxt;
 	private JComboBox<String> monthCmb;
-	private JButton uploadBtn;
+	private JButton uploadBtn, browseBtn;
 	private FileContent file;
 	private Assignment assignment;
 	
@@ -57,7 +58,18 @@ class AssignmentDialog extends JDialog {
 	
 	private void addHandlers() {
 		addUploadHandler();
+		addBrowseHandler();
 		addCloseHandler();
+	}
+	
+	private void addBrowseHandler() {
+		browseBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser chooser = new JFileChooser();
+				if (chooser.showOpenDialog(getOwner()) == JFileChooser.APPROVE_OPTION)
+					fileTxt.setText(chooser.getSelectedFile().toString());
+			}
+		});
 	}
 	
 	private void addUploadHandler() {
@@ -93,8 +105,8 @@ class AssignmentDialog extends JDialog {
 	private void layoutDialog() {
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		add(createNameRow());
-		add(createFileRow());
 		add(createDateRow());
+		add(createFileRow());
 		add(createSubmitRow());
 		pack();
 	}
@@ -102,7 +114,7 @@ class AssignmentDialog extends JDialog {
 	private JPanel createNameRow() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panel.add(new JLabel("Name"));
-		panel.add(nameTxt = new JTextField(17));
+		panel.add(nameTxt = new JTextField(16));
 		return panel;
 	}
 	
@@ -114,7 +126,7 @@ class AssignmentDialog extends JDialog {
 	}
 	
 	private JPanel createDateRow() {
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panel.add(new JLabel("Due:"));
 		panel.add(monthCmb = new JComboBox<String>(MONTHS));
 		panel.add(new JLabel("Day"));
@@ -126,6 +138,7 @@ class AssignmentDialog extends JDialog {
 	
 	private JPanel createSubmitRow() {
 		JPanel panel = new JPanel();
+		panel.add(browseBtn = new JButton("Browse"));
 		panel.add(uploadBtn = new JButton("Upload"));
 		return panel;
 	}
