@@ -11,6 +11,7 @@ public class Assignment implements TableRow, Updatable {
 	private String title;
 	private boolean active;
 	private String dueDate;
+	private FileContents file;
 	
 	public Assignment(int id, String title, boolean active, String dueDate) {
 		this.id = id;
@@ -19,8 +20,9 @@ public class Assignment implements TableRow, Updatable {
 		this.dueDate = dueDate;
 	}
 	
-	public Assignment(String title) {
+	public Assignment(String title, FileContents file) {
 		this(NEW_ID, title, false, "MAR 15 2017");
+		this.file = file;
 	}
 
 	public int getId() {

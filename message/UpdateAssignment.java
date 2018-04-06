@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import data.Assignment;
-import server.ClientHandler;
 
 public class UpdateAssignment implements Request {
 	private static final long serialVersionUID = 1L;
@@ -14,7 +13,7 @@ public class UpdateAssignment implements Request {
 		this.assignment = assignment;
 	}
 
-	public void performAction(ClientHandler server) throws IOException, SQLException {
+	public void performAction(RequestHandler server) throws IOException, SQLException {
 		if (assignment.getId() == Assignment.NEW_ID) 
 			server.createAssignment(assignment);
 		else

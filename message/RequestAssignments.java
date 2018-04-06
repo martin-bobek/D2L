@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import data.Course;
-import server.ClientHandler;
 
 public class RequestAssignments implements Request {
 	private static final long serialVersionUID = 1L;
@@ -19,7 +18,7 @@ public class RequestAssignments implements Request {
 		courseId = select.getId();
 	}
 	
-	public void performAction(ClientHandler server) throws IOException, SQLException {
+	public void performAction(RequestHandler server) throws IOException, SQLException {
 		if (courseId != ALREADY_SELECTED)
 			server.selectCourse(courseId);
 		server.sendAssignments();

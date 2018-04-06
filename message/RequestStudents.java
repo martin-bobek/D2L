@@ -3,8 +3,6 @@ package message;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import server.ClientHandler;
-
 public class RequestStudents implements Request {
 	private static final long serialVersionUID = 1L;
 	private final boolean onlyEnrolled;
@@ -13,7 +11,7 @@ public class RequestStudents implements Request {
 		this.onlyEnrolled = onlyEnrolled;
 	}
 	
-	public void performAction(ClientHandler server) throws IOException, SQLException {
+	public void performAction(RequestHandler server) throws IOException, SQLException {
 		if (onlyEnrolled)
 			server.sendEnrolledStudents();
 		else

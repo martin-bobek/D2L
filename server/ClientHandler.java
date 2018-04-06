@@ -12,8 +12,9 @@ import data.Course;
 import data.LoginCredentials;
 import data.Student;
 import message.Request;
+import message.RequestHandler;
 
-public class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable, RequestHandler {
 	ObjectInputStream input;
 	ObjectOutputStream output;
 	DatabaseManager database;

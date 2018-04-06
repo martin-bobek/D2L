@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import data.Student;
-import server.ClientHandler;
 
 public class UpdateStudent implements Request {
 	private static final long serialVersionUID = 1L;
@@ -14,7 +13,7 @@ public class UpdateStudent implements Request {
 		this.updated = updated;
 	}
 	
-	public void performAction(ClientHandler server) throws IOException, SQLException {
+	public void performAction(RequestHandler server) throws IOException, SQLException {
 		server.updateStudent(updated);
 	}
 }

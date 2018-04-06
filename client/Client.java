@@ -10,12 +10,12 @@ class Client {
 		ProfessorView view = null;
 		try {
 			ServerConnection server = new ServerConnection();
-			LoginDialog login = new LoginDialog(server);
+			LoginDialog login = new LoginDialog(server);			// TODO - Change login to be id based instead of email based
 			char type = login.login();
 			if (type == LoginCredentials.PROFESSOR) {
 				TableModel table = new TableModel();
 				view = new ProfessorView(table);
-				ProfessorController controller = new ProfessorController(view, table, server);
+				ProfessorController controller = new ProfessorController(view, table, server, new FileHelper());
 				controller.runClient();
 			} else {
 				JOptionPane.showMessageDialog(view, "User type " + type + " not supported!");

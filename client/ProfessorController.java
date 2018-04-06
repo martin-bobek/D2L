@@ -24,13 +24,15 @@ class ProfessorController {
 	private ProfessorView view;
 	private TableModel table;
 	private ServerConnection server;
+	private FileHelper fileHelper;
 	private AtomicBoolean locked = new AtomicBoolean(true);
 	
-	ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
+	ProfessorController(ProfessorView view, TableModel table, ServerConnection server, FileHelper helper) {
 		this.view = view;
 		server.addTable(table);
 		this.table = table;
 		this.server = server;
+		fileHelper = helper;
 		subscribeHandlers();
 	}
 	
@@ -144,14 +146,11 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				try {
-					Assignment assignment = showAssignmentDialog();
+					Assignment assignment = AssignmentDialog.showAssignmentDialog(view, fileHelper);
 					if (assignment == null)
 						locked.set(false);
 					else
 						server.sendObject(new UpdateAssignment(assignment));
-				} catch (InvalidParameterException ex) {
-					locked.set(false);
-					JOptionPane.showMessageDialog(view, ex.getMessage());
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -196,6 +195,7 @@ class ProfessorController {
 		return new Course(name);
 	}
 	
+	/*
 	private Assignment showAssignmentDialog() throws InvalidParameterException {
 		String name = JOptionPane.showInputDialog(view, "Assignment Name:", "Create Assignment", JOptionPane.PLAIN_MESSAGE);
 		if (name == null)
@@ -204,6 +204,7 @@ class ProfessorController {
 			throw new InvalidParameterException("Assignment name cannot be empty!");
 		return new Assignment(name);
 	}
+	*/
 	
 	private void lostConnection() {
 		JOptionPane.showMessageDialog(view, "Lost connection to server!");
