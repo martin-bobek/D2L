@@ -23,8 +23,7 @@ class DatabaseManager {
 	private int profId;
 	private int courseId;
 	
-	DatabaseManager(int profId) throws SQLException {
-		this.profId = profId;
+	DatabaseManager() throws SQLException {
 		connection = DriverManager.getConnection(URL, USER, PASSWORD);
 	}
 	
@@ -87,10 +86,10 @@ class DatabaseManager {
 	}
 
 	void createAssignment(Assignment assignment) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("INSERT INTO ASSIGNMENT (COURSE_ID, TITLE, PATH, ACTIVE, DUE_DATE) VALUES (?, ?, ?, ?, ?)");
+		PreparedStatement statement = connection.prepareStatement("INSERT INTO ASSIGNMENT (COURSE_ID, TITLE, EXTENSION, ACTIVE, DUE_DATE) VALUES (?, ?, ?, ?, ?)");
 		statement.setInt(1, courseId);
 		statement.setString(2, assignment.getTitle());
-		statement.setString(3, "");
+		statement.setString(3, assignment.getFile().getExtension());
 		statement.setBoolean(4, assignment.getActive());
 		statement.setString(5, assignment.getDueDate());
 		statement.executeUpdate();

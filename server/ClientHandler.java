@@ -15,14 +15,17 @@ import message.Request;
 import message.RequestHandler;
 
 public class ClientHandler implements Runnable, RequestHandler {
+	private final static String FILE_STORAGE = "C:\\Users\\Martin\\Desktop\\AppStorage"; 
 	ObjectInputStream input;
 	ObjectOutputStream output;
 	DatabaseManager database;
+	FileManager files;
 	
 	ClientHandler(Socket socket) throws IOException, SQLException {
 		output = new ObjectOutputStream(socket.getOutputStream());
 		input = new ObjectInputStream(socket.getInputStream());
-		database = new DatabaseManager(0);
+		database = new DatabaseManager();
+		files = new FileManager(FILE_STORAGE);
 	}
 	
 	public void run() {
@@ -69,6 +72,8 @@ public class ClientHandler implements Runnable, RequestHandler {
 	public void createAssignment(Assignment assignment) throws SQLException, IOException {
 		database.createAssignment(assignment);
 		assignment.setId(database.getLastId());
+		files.setPath(FileManager.ASSIGNMENT, assignment.getId());
+		files.storeFile(assignment.getFile());
 		ArrayList<Assignment> assList = new ArrayList<Assignment>();
 		assList.add(assignment);
 		output.writeObject(assList);

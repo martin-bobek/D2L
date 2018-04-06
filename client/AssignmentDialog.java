@@ -18,14 +18,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import data.Assignment;
-import data.FileContents;
+import data.FileContent;
 
 class AssignmentDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final FileHelper fileHelper;
 	private JTextField nameTxt, fileTxt;
 	private JButton uploadBtn;
-	private FileContents file;
+	private FileContent file;
 	private Assignment assignment;
 	
 	private AssignmentDialog(JFrame owner, FileHelper helper) {
