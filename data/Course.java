@@ -48,7 +48,7 @@ public class Course implements TableRow, Updatable {
 	
 	public Object getColumn(int index) {
 		if (index == NAME_COL)
-			return name;
+			return id + ": " + name;
 		if (index == ACTIVE_COL)
 			return active;
 		return null;

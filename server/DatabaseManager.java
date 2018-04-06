@@ -19,7 +19,7 @@ class DatabaseManager {
 	private static final String URL = "jdbc:mysql://localhost:3306/" + DATABASE;
 	private static final String USER = "martin";	// TODO - Create proper account for application
 	private static final String PASSWORD = "966567";
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-dd-MM");
 	private Connection connection;
 	private ResultSet results;
 	private int profId;
@@ -46,7 +46,7 @@ class DatabaseManager {
 	}
 	
 	ArrayList<Course> getCourses() throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT ID, NAME, ACTIVE FROM COURSE WHERE PROF_ID = ?");
+		PreparedStatement statement = connection.prepareStatement("SELECT ID, NAME, ACTIVE FROM COURSE WHERE PROF_ID = ? ORDER BY ID");
 		statement.setInt(1, profId);
 		results = statement.executeQuery();
 		ArrayList<Course> courses = new ArrayList<Course>();
@@ -71,7 +71,7 @@ class DatabaseManager {
 	}
 	
 	ArrayList<Assignment> getAssignments() throws SQLException, ParseException {
-		PreparedStatement statement = connection.prepareStatement("SELECT ID, TITLE, ACTIVE, DUE_DATE FROM ASSIGNMENT WHERE COURSE_ID = ?");
+		PreparedStatement statement = connection.prepareStatement("SELECT ID, TITLE, ACTIVE, DUE_DATE FROM ASSIGNMENT WHERE COURSE_ID = ? ORDER BY DUE_DATE");
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
 		ArrayList<Assignment> assignments = new ArrayList<Assignment>();
