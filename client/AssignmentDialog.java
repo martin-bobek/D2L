@@ -64,11 +64,8 @@ class AssignmentDialog extends JDialog {
 		final Thread thread = Thread.currentThread();
 		uploadBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!filled()) {
-					JOptionPane.showMessageDialog(getOwner(), "Empty fields are not allowed!");
-					return;
-				}
 				try {
+					validateInput();
 					file = fileHelper.uploadFile(new File(fileTxt.getText()));
 					assignment = new Assignment(nameTxt.getText(), file, parseDate());
 					thread.interrupt();
@@ -76,6 +73,8 @@ class AssignmentDialog extends JDialog {
 					JOptionPane.showMessageDialog(getOwner(), "File Error: " + ex.getMessage());
 				} catch (ParseException ex) {
 					JOptionPane.showMessageDialog(getOwner(), "Invalid date!");
+				} catch (InvalidParameterException ex) {
+					JOptionPane.showMessageDialog(getOwner(), ex.getMessage());
 				}
 			}
 		});
@@ -131,12 +130,15 @@ class AssignmentDialog extends JDialog {
 		return panel;
 	}
 	
-	private boolean filled() {
-		return !nameTxt.getText().isEmpty() &&
-			   !fileTxt.getText().isEmpty() &&
-			   !dayTxt.getText().isEmpty() && 
-			   !yearTxt.getText().isEmpty() &&
-			   monthCmb.getSelectedIndex() != 0;
+	private void validateInput() throws InvalidParameterException {
+		if (nameTxt.getText().isEmpty() ||
+			   fileTxt.getText().isEmpty() ||
+			   dayTxt.getText().isEmpty() || 
+			   yearTxt.getText().isEmpty() ||
+			   monthCmb.getSelectedIndex() == 0)
+			throw new InvalidParameterException("Empty fields are not allowed!");
+		if (nameTxt.getText().length() > 50)
+			throw new InvalidParameterException("Name has a maximum of 50 characters!");
 	}
 	
 	private Date parseDate() throws ParseException {

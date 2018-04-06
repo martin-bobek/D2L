@@ -198,9 +198,6 @@ class ProfessorController {
 						locked.set(false);
 					else
 						server.sendObject(new UpdateCourse(course));
-				} catch (InvalidParameterException ex) {
-					locked.set(false);
-					JOptionPane.showMessageDialog(view, ex.getMessage());
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -256,13 +253,18 @@ class ProfessorController {
 		});
 	}
 	
-	private Course showCourseDialog() throws InvalidParameterException {
-		String name = JOptionPane.showInputDialog(view, "Course Name:", "Create Course", JOptionPane.PLAIN_MESSAGE);
-		if (name == null)
-			return null;
-		if (name.isEmpty())
-			throw new InvalidParameterException("Course name cannot be empty!");
-		return new Course(name);
+	private Course showCourseDialog() {
+		while (true) {
+			String name = JOptionPane.showInputDialog(view, "Course Name:", "Create Course", JOptionPane.PLAIN_MESSAGE);
+			if (name == null)
+				return null;
+			else if (name.isEmpty())
+				JOptionPane.showMessageDialog(view, "Course name cannot be empty!");
+			else if (name.length() > 50)
+				JOptionPane.showMessageDialog(view, "Course name cannot have more than 50 characters!");
+			else
+				return new Course(name);
+		}
 	}
 	
 	private void lostConnection() {
