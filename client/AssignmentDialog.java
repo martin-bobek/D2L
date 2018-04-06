@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 
 import data.Assignment;
 import data.FileContent;
+import helper.FileHelper;
 
 class AssignmentDialog extends JDialog {
 	private static final long serialVersionUID = 1L;

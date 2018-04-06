@@ -1,12 +1,20 @@
 package data;
 
+import helper.RowProperties;
+import helper.TableRow;
 import message.Request;
 import message.UpdateAssignment;
 
 public class Assignment implements TableRow, Updatable {
-	public static final int NEW_ID = -1;
 	private static final long serialVersionUID = 1L;
-	private static final String[] COLUMNS = { "Name", "Due", "Active" };
+	public static final int NEW_ID = -1;
+	public static final RowProperties ROW_PROPERTIES = new RowProperties(3,
+			new String[] { "Name", "Due", "Active" }, 
+			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
+			new boolean[] { false, false, true });
+	private static final int NAME_COL = 0;
+	private static final int DUE_COL = 1;
+	private static final int ACTIVE_COL = 2;
 	private int id;
 	private String title;
 	private boolean active;
@@ -45,44 +53,26 @@ public class Assignment implements TableRow, Updatable {
 		return dueDate;
 	}
 	
-	public Request createRequest() {
-		return new UpdateAssignment(this);
-	}
-
-	public int getNumColumns() {
-		return 3;
+	public FileContent getFile() {
+		return file;
 	}
 
 	public Object getColumn(int index) {
-		if (index == 0)
+		if (index == NAME_COL)
 			return title;
-		if (index == 1)
+		if (index == DUE_COL)
 			return dueDate;
-		if (index == 2)
+		if (index == ACTIVE_COL)
 			return active;
 		return null;
 	}
 
 	public void setColumn(Object value, int index) {
-		if (index == 2)
+		if (index == ACTIVE_COL)
 			active = (boolean)value;
 	}
-
-	public String getColumnName(int index) {
-		return COLUMNS[index];
-	}
-
-	public Class<?> getColumnType(int index) {
-		if (index == 2)
-			return CHECKBOX;
-		return STRING;
-	}
-
-	public boolean getColumnEditable(int index) {
-		return index == 2;
-	}
-
-	public FileContent getFile() {
-		return file;
+	
+	public Request createRequest() {
+		return new UpdateAssignment(this);
 	}
 }

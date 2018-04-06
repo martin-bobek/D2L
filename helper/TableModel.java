@@ -1,16 +1,15 @@
-package client;
+package helper;
 
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import data.TableRow;
-
-class TableModel extends AbstractTableModel {
+public class TableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;	
 	private ArrayList<TableRow> rows;
+	private RowProperties properties;
 	
-	TableModel() {
+	public TableModel() {
 		rows = new ArrayList<TableRow>();
 	}
 	
@@ -18,26 +17,25 @@ class TableModel extends AbstractTableModel {
 		fireTableRowsUpdated(row, row);
 	}
 	
-	void clear() {
+	public void reset(RowProperties properties) {
 		rows.clear();
+		this.properties = properties;
 		fireTableStructureChanged();
 	}
 	
 	void addElement(TableRow row) {
 		rows.add(row);
-		if (rows.size() == 1)
-			fireTableStructureChanged();
 		fireTableRowsInserted(rows.size() - 1, rows.size() - 1);
 	}
 	
-	TableRow getRow(int row) {
+	public TableRow getRow(int row) {
 		return rows.get(row);
 	}
 	
 	public int getColumnCount() {
-		if (rows.isEmpty())
+		if (properties == null)
 			return 0;
-		return rows.get(0).getNumColumns();
+		return properties.getNumColumns();
 	}
 	
 	public int getRowCount() {
@@ -45,7 +43,7 @@ class TableModel extends AbstractTableModel {
 	}
 
 	public String getColumnName(int col) {
-		return rows.get(0).getColumnName(col);
+		return properties.getColumnName(col);
 	}
 	
 	public Object getValueAt(int rowIndex, int colIndex) {
@@ -53,11 +51,11 @@ class TableModel extends AbstractTableModel {
 	}
 	
 	public Class<?> getColumnClass(int col) {
-		return rows.get(0).getColumnType(col);	
+		return properties.getColumnType(col);
 	}
 	
 	public boolean isCellEditable(int row, int col) {
-		return rows.get(0).getColumnEditable(col);
+		return properties.getColumnEditable(col);
 	}
 	
 	public void setValueAt(Object value, int row, int col) {

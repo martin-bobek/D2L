@@ -17,6 +17,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
+import helper.TableModel;
+
 class ProfessorView extends JFrame {
 	private static final long serialVersionUID = 1L;
 	static final int NO_SELECTION = -1;

@@ -1,4 +1,4 @@
-package client;
+package helper;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -7,12 +7,12 @@ import java.io.IOException;
 
 import data.FileContent;
 
-class FileHelper {
-	FileHelper() {
+public class FileHelper {
+	public FileHelper() {
 		
 	}
 	
-	FileContent uploadFile(File file) throws IOException {
+	public FileContent uploadFile(File file) throws IOException {
 		byte[] content = new byte[validateLength(file)];
 		BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
 		input.read(content);

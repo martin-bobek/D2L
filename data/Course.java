@@ -1,12 +1,19 @@
 package data;
 
+import helper.RowProperties;
+import helper.TableRow;
 import message.Request;
 import message.UpdateCourse;
 
 public class Course implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
-	private static final String[] COLUMNS = { "Name", "Active" };
 	public static final int NEW_ID = -1;
+	public static final RowProperties ROW_PROPERTIES = new RowProperties(2, 
+			new String[] { "Name", "Active" }, 
+			new Class<?>[] { RowProperties.STRING, RowProperties.CHECKBOX }, 
+			new boolean[] { false, true });
+	private static final int NAME_COL = 0;
+	private static final int ACTIVE_COL	= 1;
 	private int id;
 	private String name;
 	private boolean active;
@@ -41,34 +48,16 @@ public class Course implements TableRow, Updatable {
 		this.active = active;
 	}
 	
-	public int getNumColumns() {
-		return 2;
-	}
-
 	public Object getColumn(int index) {
-		if (index == 0)
+		if (index == NAME_COL)
 			return name;
-		if (index == 1)
+		if (index == ACTIVE_COL)
 			return active;
 		return null;
 	}
 	
-	public String getColumnName(int index) {
-		return COLUMNS[index];
-	}
-
-	public Class<?> getColumnType(int index) {
-		if (index == 1)
-			return CHECKBOX;
-		return STRING;
-	}
-	
-	public boolean getColumnEditable(int index) {
-		return index == 1;
-	}
-
 	public void setColumn(Object value, int index) {
-		if (index == 1)
+		if (index == ACTIVE_COL)
 			active = (boolean)value;
 	}
 	

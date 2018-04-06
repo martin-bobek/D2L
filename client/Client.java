@@ -3,6 +3,8 @@ package client;
 import javax.swing.JOptionPane;
 
 import data.LoginCredentials;
+import helper.ServerConnection;
+import helper.TableModel;
 
 class Client {
 	public static void main(String[] args) {
@@ -15,7 +17,7 @@ class Client {
 			if (type == LoginCredentials.PROFESSOR) {
 				TableModel table = new TableModel();
 				view = new ProfessorView(table);
-				ProfessorController controller = new ProfessorController(view, table, server, new FileHelper());
+				ProfessorController controller = new ProfessorController(view, table, server);
 				controller.runClient();
 			} else {
 				JOptionPane.showMessageDialog(view, "User type " + type + " not supported!");

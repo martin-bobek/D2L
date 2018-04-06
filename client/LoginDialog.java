@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import data.LoginCredentials;
+import helper.ServerConnection;
 
 class LoginDialog extends JFrame {
 	private static final long serialVersionUID = 1L;

@@ -13,7 +13,11 @@ import javax.swing.event.TableModelListener;
 
 import data.Assignment;
 import data.Course;
+import data.Student;
 import data.Updatable;
+import helper.FileHelper;
+import helper.ServerConnection;
+import helper.TableModel;
 import message.RequestAssignments;
 import message.RequestCourses;
 import message.RequestStudents;
@@ -27,12 +31,13 @@ class ProfessorController {
 	private FileHelper fileHelper;
 	private AtomicBoolean locked = new AtomicBoolean(true);
 	
-	ProfessorController(ProfessorView view, TableModel table, ServerConnection server, FileHelper helper) {
-		this.view = view;
+	ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
+		table.reset(Course.ROW_PROPERTIES);
 		server.addTable(table);
+		this.view = view;
 		this.table = table;
 		this.server = server;
-		fileHelper = helper;
+		fileHelper = new FileHelper();
 		subscribeHandlers();
 	}
 	
@@ -62,7 +67,7 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
-				table.clear();
+				table.reset(Assignment.ROW_PROPERTIES);
 				try {
 					server.sendObject(new RequestAssignments());
 				} catch (IOException ex) {
@@ -78,7 +83,7 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.STUDENT_PAGE);
-				table.clear();
+				table.reset(Student.ROW_PROPERTIES);
 				try {
 					server.sendObject(new RequestStudents(false));
 				} catch (IOException e1) {
@@ -94,7 +99,7 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.COURSE_PAGE);
-				table.clear();
+				table.reset(Course.ROW_PROPERTIES);
 				try {
 					server.sendObject(new RequestCourses());
 				} catch (IOException ex) {
@@ -163,9 +168,9 @@ class ProfessorController {
 			public void actionPerformed(ActionEvent e) {
 				if (!locked.compareAndSet(false, true))
 					return;
-				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
 				Course course = (Course)table.getRow(view.getSelected());
-				table.clear();
+				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
+				table.reset(Assignment.ROW_PROPERTIES);
 				try {
 					server.sendObject(new RequestAssignments(course));
 				} catch (IOException ex) {
