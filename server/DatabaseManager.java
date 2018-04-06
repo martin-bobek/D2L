@@ -32,13 +32,13 @@ class DatabaseManager {
 	}
 	
 	char validateLogin(LoginCredentials credentials) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT ID, TYPE FROM USER WHERE EMAIL = ? AND PASSWORD = ?");
-		statement.setString(1, credentials.getUsername());
+		PreparedStatement statement = connection.prepareStatement("SELECT TYPE FROM USER WHERE ID = ? AND PASSWORD = ?");
+		statement.setInt(1, credentials.getUserId());
 		statement.setString(2, credentials.getPassword());
 		results = statement.executeQuery();
 		if (results.next()) {
-			profId = results.getInt(1);
-			return results.getString(2).charAt(0);
+			this.profId = credentials.getUserId();
+			return results.getString(1).charAt(0);
 		}
 		return LoginCredentials.BAD_LOGIN;
 	}

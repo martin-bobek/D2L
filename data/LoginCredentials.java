@@ -9,20 +9,24 @@ public class LoginCredentials implements Serializable {
 	public static final char BAD_LOGIN = 0;
 	public static final char PROFESSOR = 'P';
 	public static final char STUDENT = 'S';
-	private String username;
+	private int userId;
 	private String password;
 	
-	public LoginCredentials(String username, String password) throws InvalidParameterException {
-		if (username == null || username.isEmpty())
-			throw new InvalidParameterException("Username cannot be empty!");
-		if (password == null || password.isEmpty())
-			throw new InvalidParameterException("Password cannot be empty!");
-		this.username = username;
-		this.password = password;
+	public LoginCredentials(String userId, char[] password) throws InvalidParameterException {
+		if (userId == null || userId.length() != 6)
+			throw new InvalidParameterException("User ID must be 6 digits!");
+		if (password == null || password.length == 0)
+			throw new InvalidParameterException("Password cannot be empty!");		
+		this.password = new String(password);
+		try {
+			this.userId = Integer.parseInt(userId);
+		} catch (NumberFormatException e) {
+			throw new InvalidParameterException("Invalid User ID!");
+		}
 	}
 	
-	public String getUsername() {
-		return username;
+	public int getUserId() {
+		return userId;
 	}
 	
 	public String getPassword() {

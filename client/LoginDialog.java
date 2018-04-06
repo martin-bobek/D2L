@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import data.LoginCredentials;
@@ -21,7 +22,8 @@ import helper.ServerConnection;
 
 class LoginDialog extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private JTextField usernameTxt, passwordTxt;
+	private JTextField userIdTxt;
+	private JPasswordField passwordTxt;
 	private JButton loginBtn;
 	private ServerConnection server;
 	private AtomicBoolean locked = new AtomicBoolean(false);
@@ -58,7 +60,7 @@ class LoginDialog extends JFrame {
 				if (!locked.compareAndSet(false, true))
 					return;
 				try {
-					server.sendObject(new LoginCredentials(usernameTxt.getText(), passwordTxt.getText()));
+					server.sendObject(new LoginCredentials(userIdTxt.getText(), passwordTxt.getPassword()));
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(this_, "Lost connection to server!");
 					System.exit(1);
@@ -80,10 +82,10 @@ class LoginDialog extends JFrame {
 	
 	private JPanel createFields() {
 		JPanel panel = new JPanel(new GridBagLayout());
-		panel.add(new JLabel("Username:"), gridConstraints(0, 0));
-		panel.add(usernameTxt = new JTextField(15), gridConstraints(1, 0));
+		panel.add(new JLabel("User ID:"), gridConstraints(0, 0));
+		panel.add(userIdTxt = new JTextField(15), gridConstraints(1, 0));
 		panel.add(new JLabel("Password:"), gridConstraints(0, 1));
-		panel.add(passwordTxt = new JTextField(15), gridConstraints(1, 1));
+		panel.add(passwordTxt = new JPasswordField(15), gridConstraints(1, 1));
 		return panel;
 	}
 	
