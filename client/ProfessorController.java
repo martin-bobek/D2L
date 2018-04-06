@@ -232,6 +232,8 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				Course course = (Course)table.getRow(view.getSelected());
+				view.setAdditionalText(course.getName(), ProfessorView.ASSIGNMENT_PAGE);
+				view.setAdditionalText(course.getName(), ProfessorView.STUDENT_PAGE);
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
 				table.reset(Assignment.ROW_PROPERTIES);
 				try {

@@ -7,9 +7,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,8 +27,10 @@ import helper.FileHelper;
 
 class AssignmentDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
+	private static final String[] MONTHS = { "", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
 	private final FileHelper fileHelper;
-	private JTextField nameTxt, fileTxt;
+	private JTextField nameTxt, fileTxt, dayTxt, yearTxt;
+	private JComboBox<String> monthCmb;
 	private JButton uploadBtn;
 	private FileContent file;
 	private Assignment assignment;
@@ -64,10 +70,12 @@ class AssignmentDialog extends JDialog {
 				}
 				try {
 					file = fileHelper.uploadFile(new File(fileTxt.getText()));
-					assignment = new Assignment(nameTxt.getText(), file);
+					assignment = new Assignment(nameTxt.getText(), file, parseDate());
 					thread.interrupt();
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(getOwner(), "File Error: " + ex.getMessage());
+				} catch (ParseException ex) {
+					JOptionPane.showMessageDialog(getOwner(), "Invalid date!");
 				}
 			}
 		});
@@ -87,6 +95,7 @@ class AssignmentDialog extends JDialog {
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		add(createNameRow());
 		add(createFileRow());
+		add(createDateRow());
 		add(createSubmitRow());
 		pack();
 	}
@@ -94,14 +103,25 @@ class AssignmentDialog extends JDialog {
 	private JPanel createNameRow() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panel.add(new JLabel("Name"));
-		panel.add(nameTxt = new JTextField(20));
+		panel.add(nameTxt = new JTextField(17));
 		return panel;
 	}
 	
 	private JPanel createFileRow() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		panel.add(new JLabel("File"));
-		panel.add(fileTxt = new JTextField(20));
+		panel.add(fileTxt = new JTextField(17));
+		return panel;
+	}
+	
+	private JPanel createDateRow() {
+		JPanel panel = new JPanel();
+		panel.add(new JLabel("Due:"));
+		panel.add(monthCmb = new JComboBox<String>(MONTHS));
+		panel.add(new JLabel("Day"));
+		panel.add(dayTxt = new JTextField(2));
+		panel.add(new JLabel("Year"));
+		panel.add(yearTxt = new JTextField(4));
 		return panel;
 	}
 	
@@ -113,6 +133,15 @@ class AssignmentDialog extends JDialog {
 	
 	private boolean filled() {
 		return !nameTxt.getText().isEmpty() &&
-			   !fileTxt.getText().isEmpty();
+			   !fileTxt.getText().isEmpty() &&
+			   !dayTxt.getText().isEmpty() && 
+			   !yearTxt.getText().isEmpty() &&
+			   monthCmb.getSelectedIndex() != 0;
+	}
+	
+	private Date parseDate() throws ParseException {
+		SimpleDateFormat format = new SimpleDateFormat("ddMMMyyyy");
+		format.setLenient(false);
+		return format.parse(dayTxt.getText() + (String)monthCmb.getSelectedItem() + yearTxt.getText());
 	}
 }

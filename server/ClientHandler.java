@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import data.Assignment;
@@ -34,7 +35,7 @@ public class ClientHandler implements Runnable, RequestHandler {
 			login();
 			while (true)
 				((Request)input.readObject()).performAction(this);
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | ParseException e) {
 			System.err.println("Error 2: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("Client disconnected.");
@@ -62,7 +63,7 @@ public class ClientHandler implements Runnable, RequestHandler {
 		output.writeObject(courseList);
 	}
 	
-	public void sendAssignments() throws IOException, SQLException {
+	public void sendAssignments() throws IOException, SQLException, ParseException {
 		output.writeObject(database.getAssignments());
 	}
 	

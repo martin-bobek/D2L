@@ -1,5 +1,8 @@
 package data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import message.Request;
 import message.UpdateAssignment;
 
@@ -16,18 +19,18 @@ public class Assignment implements TableRow, Updatable {
 	private int id;
 	private String title;
 	private boolean active;
-	private String dueDate;
+	private Date dueDate;
 	private FileContent file;
 	
-	public Assignment(int id, String title, boolean active, String dueDate) {
+	public Assignment(int id, String title, boolean active, Date dueDate) {
 		this.id = id;
 		this.title = title;
 		this.active = active;
 		this.dueDate = dueDate;
 	}
 	
-	public Assignment(String title, FileContent file) {
-		this(NEW_ID, title, false, "MAR 15 2017");
+	public Assignment(String title, FileContent file, Date due) {
+		this(NEW_ID, title, false, due);
 		this.file = file;
 	}
 
@@ -47,20 +50,21 @@ public class Assignment implements TableRow, Updatable {
 		return active;
 	}
 	
-	public String getDueDate() {
-		return dueDate;
-	}
-	
 	public FileContent getFile() {
 		return file;
+	}
+	
+	public Date getDueDate() {
+		return dueDate;
 	}
 
 	public Object getColumn(int index) {
 		if (index == NAME_COL)
 			return title;
-		if (index == DUE_COL)
-			return dueDate;
-		if (index == ACTIVE_COL)
+		if (index == DUE_COL) {
+			SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy");
+			return format.format(dueDate);
+		} if (index == ACTIVE_COL)
 			return active;
 		return null;
 	}

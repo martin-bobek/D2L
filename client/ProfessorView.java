@@ -28,6 +28,7 @@ class ProfessorView extends JFrame {
 	static final int STUDENT_PAGE = 2;
 	private static final int NUM_PAGES = 3;
 	private static final String HEADERS[] = { "Courses", "Assignments", "Students" };
+	private String additionalText[] = { "", "", "" };
 	
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
@@ -41,7 +42,14 @@ class ProfessorView extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
 		this.table.setModel(table);
-		setMinimumSize(new Dimension(500, 500));
+		setMinimumSize(new Dimension(600, 300));
+	}
+	
+	void setAdditionalText(String text, int page) {
+		if (text.length() > 35)
+			additionalText[page] = " - " + text.substring(0, 33) + "...";
+		else
+			additionalText[page] = " - " + text;
 	}
 	
 	void setClearSearchEnabled(boolean enabled) {
@@ -61,7 +69,7 @@ class ProfessorView extends JFrame {
 	}
 	
 	void selectPage(int page) {
-		header.setText(HEADERS[page]);
+		header.setText(HEADERS[page] + additionalText[page]);
 		remove(buttonPanels[this.page]);
 		add(buttonPanels[page], BorderLayout.SOUTH);
 		repaint();

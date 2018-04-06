@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import data.Assignment;
@@ -17,7 +19,7 @@ class DatabaseManager {
 	private static final String URL = "jdbc:mysql://localhost:3306/" + DATABASE;
 	private static final String USER = "martin";	// TODO - Create proper account for application
 	private static final String PASSWORD = "966567";
-	
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 	private Connection connection;
 	private ResultSet results;
 	private int profId;
@@ -68,13 +70,13 @@ class DatabaseManager {
 		statement.executeUpdate();
 	}
 	
-	ArrayList<Assignment> getAssignments() throws SQLException {
+	ArrayList<Assignment> getAssignments() throws SQLException, ParseException {
 		PreparedStatement statement = connection.prepareStatement("SELECT ID, TITLE, ACTIVE, DUE_DATE FROM ASSIGNMENT WHERE COURSE_ID = ?");
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
 		ArrayList<Assignment> assignments = new ArrayList<Assignment>();
 		while (results.next())
-			assignments.add(new Assignment(results.getInt(1), results.getString(2), results.getBoolean(3), results.getString(4)));
+			assignments.add(new Assignment(results.getInt(1), results.getString(2), results.getBoolean(3), dateFormat.parse(results.getString(4))));
 		return assignments;
 	}
 	
@@ -91,7 +93,7 @@ class DatabaseManager {
 		statement.setString(2, assignment.getTitle());
 		statement.setString(3, assignment.getFile().getExtension());
 		statement.setBoolean(4, assignment.getActive());
-		statement.setString(5, assignment.getDueDate());
+		statement.setString(5, dateFormat.format(assignment.getDueDate()));
 		statement.executeUpdate();
 	}
 	
