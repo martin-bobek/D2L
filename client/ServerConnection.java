@@ -1,4 +1,4 @@
-package helper;
+package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import data.TableRow;
-import helper.TableModel;
 
 public class ServerConnection {
 	private Socket socket;

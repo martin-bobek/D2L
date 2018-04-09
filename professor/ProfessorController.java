@@ -1,4 +1,4 @@
-package client;
+package professor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,39 +11,39 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import client.Controller;
+import client.FileHelper;
+import client.ServerConnection;
+import client.TableModel;
 import data.Assignment;
 import data.Course;
 import data.Student;
 import data.Updatable;
-import helper.FileHelper;
-import helper.ServerConnection;
-import helper.TableModel;
 import message.RequestAssignments;
 import message.RequestCourses;
 import message.RequestStudents;
 import message.UpdateAssignment;
 import message.UpdateCourse;
 
-class ProfessorController {
+public class ProfessorController implements Controller {
 	private ProfessorView view;
 	private TableModel table;
 	private ServerConnection server;
-	private FileHelper fileHelper;
+	private FileHelper fileHelper = new FileHelper();
 	private AtomicBoolean locked = new AtomicBoolean(true);
 	
 	private RequestStudents search = new RequestStudents();
 	
-	ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
-		table.reset(Course.ROW_PROPERTIES);
+	public ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
+		table.reset(Course.PROF_ROW_PROPERTIES);
 		server.addTable(table);
 		this.view = view;
 		this.table = table;
 		this.server = server;
-		fileHelper = new FileHelper();
 		subscribeHandlers();
 	}
 	
-	void runClient() throws IOException, ClassNotFoundException {
+	public void runClient() throws IOException, ClassNotFoundException {
 		view.setVisible(true);
 		server.sendObject(new RequestCourses());
 		while (true) {
@@ -162,7 +162,7 @@ class ProfessorController {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.COURSE_PAGE);
-				table.reset(Course.ROW_PROPERTIES);
+				table.reset(Course.PROF_ROW_PROPERTIES);
 				try {
 					server.sendObject(new RequestCourses());
 				} catch (IOException ex) {

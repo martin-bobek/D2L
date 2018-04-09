@@ -1,4 +1,4 @@
-package helper;
+package client;
 
 import java.util.ArrayList;
 
@@ -53,23 +53,23 @@ public class TableModel extends AbstractTableModel {
 	}
 
 	public String getColumnName(int col) {
-		return properties.getColumnName(col);
-	}
-	
-	public Object getValueAt(int rowIndex, int colIndex) {
-		return rows.get(rowIndex).getColumn(colIndex);
+		return properties.getName(col);
 	}
 	
 	public Class<?> getColumnClass(int col) {
-		return properties.getColumnType(col);
+		return properties.getType(col);
 	}
 	
 	public boolean isCellEditable(int row, int col) {
-		return properties.getColumnEditable(col);
+		return properties.getEditable(col);
+	}
+	
+	public Object getValueAt(int row, int col) {
+		return rows.get(row).getColumn(properties.columnMap(col));
 	}
 	
 	public void setValueAt(Object value, int row, int col) {
-		rows.get(row).setColumn(value, col);
+		rows.get(row).setColumn(value, properties.columnMap(col));
 		fireTableCellUpdated(row, col);
 	}
 }

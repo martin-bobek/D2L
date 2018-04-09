@@ -5,13 +5,16 @@ import message.UpdateStudent;
 
 public class Student implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
-	public static final RowProperties ROW_PROPERTIES = new RowProperties(3, 
-			new String[] { "Id", "Name", "Enrolled" },
-			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
-			new boolean[] { false, false, true });
 	private static final int ID_COL = 0;
 	private static final int NAME_COL = 1;
 	private static final int ENROLLED_COL = 2;
+	
+	public static final RowProperties ROW_PROPERTIES = new RowProperties( 
+			new String[] { "Id", "Name", "Enrolled" },
+			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
+			new boolean[] { false, false, true }, 
+			new int[] { ID_COL, NAME_COL, ENROLLED_COL });
+	
 	private int id;
 	private String firstName;
 	private String lastName;

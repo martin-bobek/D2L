@@ -5,30 +5,36 @@ public class RowProperties {
 	public static final Class<?> CHECKBOX = Boolean.class;
 	
 	private final int numColumns;
-	private final String[] columnNames;
-	private final Class<?>[] columnTypes;
-	private final boolean[] columnEditable;
+	private final String[] names;
+	private final Class<?>[] types;
+	private final boolean[] editable;
+	private final int[] map;
 	
-	public RowProperties(int numColumns, String[] columnNames, Class<?>[] columnTypes, boolean[] editable) {
-		this.numColumns = numColumns;
-		this.columnNames = columnNames;
-		this.columnTypes = columnTypes;
-		this.columnEditable = editable;
+	public RowProperties(String[] names, Class<?>[] types, boolean[] editable, int[] map) {
+		numColumns = names.length;
+		this.names = names;
+		this.types = types;
+		this.editable = editable;
+		this.map = map;
 	}
 	
 	public int getNumColumns() {
 		return numColumns;
 	}
 	
-	public String getColumnName(int col) {
-		return columnNames[col];
+	public String getName(int col) {
+		return names[col];
 	}
 	
-	public Class<?> getColumnType(int col) {
-		return columnTypes[col];
+	public Class<?> getType(int col) {
+		return types[col];
 	}
 	
-	public boolean getColumnEditable(int col) {
-		return columnEditable[col];
+	public boolean getEditable(int col) {
+		return editable[col];
+	}
+	
+	public int columnMap(int col) {
+		return map[col];
 	}
 }

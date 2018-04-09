@@ -1,4 +1,4 @@
-package client;
+package professor;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -18,9 +18,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
-import helper.TableModel;
+import client.TableModel;
 
-class ProfessorView extends JFrame {
+public class ProfessorView extends JFrame {
 	private static final long serialVersionUID = 1L;
 	static final int NO_SELECTION = -1;
 	static final int COURSE_PAGE = 0;
@@ -37,7 +37,7 @@ class ProfessorView extends JFrame {
 	private JCheckBox allStudentsChk;
 	private JTable table;
 
-	ProfessorView(TableModel table) {
+	public ProfessorView(TableModel table) {
 		super("Professor Client");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
@@ -141,7 +141,7 @@ class ProfessorView extends JFrame {
 	}
 	
 	private void layoutButtonPanels() {
-		buttonPanels[COURSE_PAGE] = createHomeButtons();
+		buttonPanels[COURSE_PAGE] = createCourseButtons();
 		buttonPanels[ASSIGNMENT_PAGE] = createAssignmentButtons();
 		buttonPanels[STUDENT_PAGE] = createStudentButtons();
 	}
@@ -163,7 +163,7 @@ class ProfessorView extends JFrame {
 		return scrollList;
 	}
 	
-	private JPanel createHomeButtons() {
+	private JPanel createCourseButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.add(viewBtn = new JButton("View"));
 		viewBtn.setEnabled(false);

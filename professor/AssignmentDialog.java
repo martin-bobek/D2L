@@ -1,4 +1,4 @@
-package client;
+package professor;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -22,9 +22,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import client.FileHelper;
+import client.InvalidParameterException;
 import data.Assignment;
 import data.FileContent;
-import helper.FileHelper;
 
 class AssignmentDialog extends JDialog {
 	private static final long serialVersionUID = 1L;

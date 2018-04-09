@@ -1,4 +1,4 @@
-package client;
+package professor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,9 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import client.InvalidParameterException;
 import message.RequestStudents;
 
-public class SearchDialog extends JDialog {
+class SearchDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton idRdio, nameRdio;
 	private JTextField searchTxt;

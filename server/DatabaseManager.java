@@ -14,15 +14,16 @@ import data.Course;
 import data.LoginCredentials;
 import data.Student;
 
-class DatabaseManager {
+class DatabaseManager implements SqlQueries {
 	private static final String DATABASE = "ApplicationData";
 	private static final String URL = "jdbc:mysql://localhost:3306/" + DATABASE;
 	private static final String USER = "martin";	// TODO - Create proper account for application
-	private static final String PASSWORD = "966567";
+	private static final String PASSWORD = "966567"; 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-dd-MM");
 	private Connection connection;
 	private ResultSet results;
-	private int profId;
+	private int userID;
+	private char userType;
 	private int courseId;
 	
 	DatabaseManager() throws SQLException {
@@ -34,44 +35,46 @@ class DatabaseManager {
 	}
 	
 	char validateLogin(LoginCredentials credentials) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT TYPE FROM USER WHERE ID = ? AND PASSWORD = ?");
+		PreparedStatement statement = connection.prepareStatement(LOGIN);
 		statement.setInt(1, credentials.getUserId());
 		statement.setString(2, credentials.getPassword());
 		results = statement.executeQuery();
 		if (results.next()) {
-			this.profId = credentials.getUserId();
-			return results.getString(1).charAt(0);
+			userID = credentials.getUserId();
+			return userType = results.getString(1).charAt(0);
 		}
 		return LoginCredentials.BAD_LOGIN;
 	}
 	
 	ArrayList<Course> getCourses() throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT ID, NAME, ACTIVE FROM COURSE WHERE PROF_ID = ? ORDER BY ID");
-		statement.setInt(1, profId);
+		PreparedStatement statement = connection.prepareStatement(userType == 'P' ? GET_PROF_COURSE : GET_STUDENT_COURSE);
+		statement.setInt(1, userID);
 		results = statement.executeQuery();
 		ArrayList<Course> courses = new ArrayList<Course>();
 		while (results.next())
-			courses.add(new Course(results.getInt(1), results.getString(2), results.getBoolean(3)));
+			courses.add(new Course(results.getInt(1), results.getString(2), 
+					userType == 'P' ? results.getBoolean(3) : true, 
+					userType == 'S' ? results.getString(3) : null));
 		return courses;
 	}
 	
 	void updateCourse(Course updated) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("UPDATE COURSE SET ACTIVE = ? WHERE ID = ?");
+		PreparedStatement statement = connection.prepareStatement(UPDATE_COURSE);
 		statement.setBoolean(1, updated.getActive());
 		statement.setInt(2, updated.getId());
 		statement.executeUpdate();
 	}
 	
 	void createCourse(Course course) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("INSERT INTO COURSE (PROF_ID, NAME, ACTIVE) VALUES (?, ?, ?)");
-		statement.setInt(1, profId);
+		PreparedStatement statement = connection.prepareStatement(CREATE_COURSE);
+		statement.setInt(1, userID);
 		statement.setString(2, course.getName());
 		statement.setBoolean(3, false);
 		statement.executeUpdate();
 	}
 	
 	ArrayList<Assignment> getAssignments() throws SQLException, ParseException {
-		PreparedStatement statement = connection.prepareStatement("SELECT ID, TITLE, ACTIVE, DUE_DATE FROM ASSIGNMENT WHERE COURSE_ID = ? ORDER BY DUE_DATE");
+		PreparedStatement statement = connection.prepareStatement(GET_ASSIGNMENT);
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
 		ArrayList<Assignment> assignments = new ArrayList<Assignment>();
@@ -81,14 +84,14 @@ class DatabaseManager {
 	}
 	
 	void updateAssignment(Assignment updated) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("UPDATE ASSIGNMENT SET ACTIVE = ? WHERE ID = ?");
+		PreparedStatement statement = connection.prepareStatement(UPDATE_ASSIGNMENT);
 		statement.setBoolean(1, updated.getActive());
 		statement.setInt(2, updated.getId());
 		statement.executeUpdate();
 	}
 
 	void createAssignment(Assignment assignment) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("INSERT INTO ASSIGNMENT (COURSE_ID, TITLE, EXTENSION, ACTIVE, DUE_DATE) VALUES (?, ?, ?, ?, ?)");
+		PreparedStatement statement = connection.prepareStatement(CREATE_ASSIGNMENT);
 		statement.setInt(1, courseId);
 		statement.setString(2, assignment.getTitle());
 		statement.setString(3, assignment.getFile().getExtension());
@@ -98,41 +101,41 @@ class DatabaseManager {
 	}
 	
 	void getAllStudents(String name) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME, CASE WHEN SE.STUDENT_ID IS NULL THEN 0b0 ELSE 0b1 END ENROLLED FROM USER U LEFT JOIN STUDENT_ENROLLMENT SE ON U.ID = SE.STUDENT_ID AND SE.COURSE_ID = ? WHERE U.TYPE = 'S' AND U.LASTNAME = ? ORDER BY U.ID");
+		PreparedStatement statement = connection.prepareStatement(GET_ALL_NAME_STUDENT);
 		statement.setInt(1, courseId);
 		statement.setString(2, name);
 		results = statement.executeQuery();
 	}
 	
 	void getAllStudents(int id) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME, CASE WHEN SE.STUDENT_ID IS NULL THEN 0b0 ELSE 0b1 END ENROLLED FROM USER U LEFT JOIN STUDENT_ENROLLMENT SE ON U.ID = SE.STUDENT_ID AND SE.COURSE_ID = ? WHERE U.TYPE = 'S' AND U.ID = ? ORDER BY U.ID");
+		PreparedStatement statement = connection.prepareStatement(GET_ALL_ID_STUDENT);
 		statement.setInt(1, courseId);
 		statement.setInt(2, id);
 		results = statement.executeQuery();
 	}
 	
 	void getAllStudents() throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME, CASE WHEN SE.STUDENT_ID IS NULL THEN 0b0 ELSE 0b1 END ENROLLED FROM USER U LEFT JOIN STUDENT_ENROLLMENT SE ON U.ID = SE.STUDENT_ID AND SE.COURSE_ID = ? WHERE U.TYPE = 'S' ORDER BY U.ID");
+		PreparedStatement statement = connection.prepareStatement(GET_ALL_STUDENT);
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
 	}
 	
 	void getEnrolledStudents(String name) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME FROM USER U JOIN STUDENT_ENROLLMENT E ON U.ID = E.STUDENT_ID WHERE E.COURSE_ID = ? AND U.LASTNAME = ? ORDER BY U.ID");
+		PreparedStatement statement = connection.prepareStatement(GET_ENROLLED_NAME_STUDENT);
 		statement.setInt(1, courseId);
 		statement.setString(2, name);
 		results = statement.executeQuery();
 	}
 	
 	void getEnrolledStudents(int id) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME FROM USER U JOIN STUDENT_ENROLLMENT E ON U.ID = E.STUDENT_ID WHERE E.COURSE_ID = ? AND U.ID = ? ORDER BY U.ID");
+		PreparedStatement statement = connection.prepareStatement(GET_ENROLLED_ID_STUDENT);
 		statement.setInt(1, courseId);
 		statement.setInt(2, id);
 		results = statement.executeQuery();
 	}
 	
 	void getEnrolledStudents() throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("SELECT U.ID, U.FIRSTNAME, U.LASTNAME FROM USER U JOIN STUDENT_ENROLLMENT E ON U.ID = E.STUDENT_ID WHERE E.COURSE_ID = ? ORDER BY U.ID");
+		PreparedStatement statement = connection.prepareStatement(GET_ENROLLED_STUDENT);
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
 	}
@@ -145,7 +148,7 @@ class DatabaseManager {
 	}
 	
 	void createEnrollment(Student student) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("INSERT INTO STUDENT_ENROLLMENT (STUDENT_ID, COURSE_ID) SELECT ?, ? FROM STUDENT_ENROLLMENT WHERE NOT EXISTS (SELECT * FROM STUDENT_ENROLLMENT WHERE STUDENT_ID = ? AND COURSE_ID = ?) LIMIT 1");
+		PreparedStatement statement = connection.prepareStatement(CREATE_ENROLLEMENT);
 		statement.setInt(1, student.getId());
 		statement.setInt(2, courseId);
 		statement.setInt(3, student.getId());
@@ -154,14 +157,14 @@ class DatabaseManager {
 	}
 	
 	void deleteEnrollment(Student student) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement("DELETE FROM STUDENT_ENROLLMENT WHERE STUDENT_ID = ? AND COURSE_ID = ?");
+		PreparedStatement statement = connection.prepareStatement(DELETE_ENROLLEMENT);
 		statement.setInt(1, student.getId());
 		statement.setInt(2, courseId);
 		statement.executeUpdate();
 	}
 	
 	int getLastId() throws SQLException {
-		results = connection.prepareStatement("SELECT LAST_INSERT_ID()").executeQuery();
+		results = connection.prepareStatement(GET_LAST_ID).executeQuery();
 		results.next();
 		return results.getInt(1);
 	}

@@ -9,13 +9,16 @@ import message.UpdateAssignment;
 public class Assignment implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
 	public static final int NEW_ID = -1;
-	public static final RowProperties ROW_PROPERTIES = new RowProperties(3,
-			new String[] { "Name", "Due", "Active" }, 
-			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
-			new boolean[] { false, false, true });
 	private static final int NAME_COL = 0;
 	private static final int DUE_COL = 1;
 	private static final int ACTIVE_COL = 2;
+	
+	public static final RowProperties ROW_PROPERTIES = new RowProperties(
+			new String[] { "Name", "Due", "Active" }, 
+			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
+			new boolean[] { false, false, true },
+			new int[] { NAME_COL, DUE_COL, ACTIVE_COL});
+	
 	private int id;
 	private String title;
 	private boolean active;
