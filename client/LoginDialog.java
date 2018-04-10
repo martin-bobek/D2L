@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import clientMessage.LoginResponse;
 import data.LoginCredentials;
 
 class LoginDialog extends JFrame {
@@ -39,11 +40,11 @@ class LoginDialog extends JFrame {
 		setVisible(true);
 	}
 	
-	char login() throws ClassNotFoundException, IOException {
-		char response;
+	LoginResponse login() throws ClassNotFoundException, IOException {
+		LoginResponse response;
 		while (true) {
 			response = server.getLoginResponse();
-			if (response != LoginCredentials.BAD_LOGIN) {
+			if (response.success()) {
 				dispose();
 				return response;
 			}

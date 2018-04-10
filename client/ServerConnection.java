@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import clientMessage.ClientInterface;
+import clientMessage.LoginResponse;
 import clientMessage.Response;
 import data.TableRow;
 
@@ -46,8 +47,8 @@ public class ServerConnection implements ClientInterface {
 		files.downloadFile(content);
 	}
 	
-	public char getLoginResponse() throws ClassNotFoundException, IOException {
-		return (Character)input.readObject();
+	public LoginResponse getLoginResponse() throws ClassNotFoundException, IOException {
+		return (LoginResponse)input.readObject();
 	}
 	
 	public void sendObject(Serializable obj) throws IOException {

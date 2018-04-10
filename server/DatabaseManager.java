@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import clientMessage.LoginResponse;
 import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
@@ -36,7 +37,7 @@ class DatabaseManager implements SqlQueries {
 		this.courseId = courseId;
 	}
 	
-	char validateLogin(LoginCredentials credentials) throws SQLException {
+	LoginResponse validateLogin(LoginCredentials credentials) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(LOGIN);
 		statement.setInt(1, credentials.getUserId());
 		statement.setString(2, credentials.getPassword());
@@ -45,9 +46,9 @@ class DatabaseManager implements SqlQueries {
 			userId = credentials.getUserId();
 			char userType = results.getString(1).charAt(0);
 			isProf = userType == 'P'; 
-			return userType;
+			return new LoginResponse(userType, results.getString(2) + ' ' + results.getString(3));
 		}
-		return LoginCredentials.BAD_LOGIN;
+		return new LoginResponse();
 	}
 	
 	ArrayList<Course> getCourses() throws SQLException {

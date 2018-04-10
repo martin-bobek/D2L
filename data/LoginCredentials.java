@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 public class LoginCredentials implements Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final char BAD_LOGIN = 0;
-	public static final char PROFESSOR = 'P';
-	public static final char STUDENT = 'S';
 	private int userId;
 	private String password;
 	

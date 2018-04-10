@@ -36,8 +36,9 @@ public class StudentView extends JFrame {
 	private JTable table;
 	private TableModel tableModel;
 
-	public StudentView(TableModel table) {
+	public StudentView(String name, TableModel table) {
 		super("Student Client");
+		setAdditionalText(name, COURSE_PAGE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
 		this.table.setModel(table);
@@ -105,7 +106,7 @@ public class StudentView extends JFrame {
 	
 	private void layoutFrame() {
 		layoutButtonPanels();
-		add(createHeader(HEADERS[page]), BorderLayout.NORTH);
+		add(createHeader(HEADERS[page] + additionalText[page]), BorderLayout.NORTH);
 		add(createTextArea(), BorderLayout.CENTER);
 		add(buttonPanels[page], BorderLayout.SOUTH);
 	}

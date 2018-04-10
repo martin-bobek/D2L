@@ -39,8 +39,9 @@ public class ProfessorView extends JFrame {
 	private JCheckBox allStudentsChk;
 	private JTable table;
 
-	public ProfessorView(TableModel table) {
+	public ProfessorView(String name, TableModel table) {
 		super("Professor Client");
+		setAdditionalText(name, COURSE_PAGE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
 		this.table.setModel(table);
@@ -159,7 +160,7 @@ public class ProfessorView extends JFrame {
 	
 	private void layoutFrame() {
 		layoutButtonPanels();
-		add(createHeader(HEADERS[page]), BorderLayout.NORTH);
+		add(createHeader(HEADERS[page] + additionalText[page]), BorderLayout.NORTH);
 		add(createTextArea(), BorderLayout.CENTER);
 		add(buttonPanels[page], BorderLayout.SOUTH);
 	}

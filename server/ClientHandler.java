@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 import clientMessage.FileDelivery;
+import clientMessage.LoginResponse;
 import clientMessage.TableUpdate;
 import data.Assignment;
 import data.Course;
@@ -130,11 +131,11 @@ public class ClientHandler implements Runnable, ServerInterface {
 	}
 	
 	private void login() throws ClassNotFoundException, SQLException, IOException {
-		char response;
+		LoginResponse response;
 		do {
 			LoginCredentials credentials = (LoginCredentials)input.readObject();
 			response = database.validateLogin(credentials);
 			output.writeObject(response);
-		} while (response == LoginCredentials.BAD_LOGIN);
+		} while (!response.success());
 	}
 }
