@@ -17,14 +17,14 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import client.InvalidParameterException;
-import message.RequestStudents;
+import serverMessage.StudentRequest;
 
 class SearchDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton idRdio, nameRdio;
 	private JTextField searchTxt;
 	private JButton searchBtn;
-	private RequestStudents request;
+	private StudentRequest request;
 	
 	private SearchDialog(JFrame owner) {
 		super(owner, "Search Students", true);
@@ -34,7 +34,7 @@ class SearchDialog extends JDialog {
 		setLocationRelativeTo(owner);
 	}
 	
-	static RequestStudents showSearchDialog(JFrame owner) {
+	static StudentRequest showSearchDialog(JFrame owner) {
 		SearchDialog dialog = new SearchDialog(owner);
 		dialog.setVisible(true);
 		try {
@@ -57,9 +57,9 @@ class SearchDialog extends JDialog {
 				try {
 					validateInput();
 					if (idRdio.isSelected())
-						request = new RequestStudents(RequestStudents.ID, Integer.parseInt(searchTxt.getText()));
+						request = new StudentRequest(StudentRequest.ID, Integer.parseInt(searchTxt.getText()));
 					else
-						request = new RequestStudents(RequestStudents.NAME, searchTxt.getText());
+						request = new StudentRequest(StudentRequest.NAME, searchTxt.getText());
 					thread.interrupt();
 				} catch (NumberFormatException ex) {
 					JOptionPane.showMessageDialog(getOwner(), "ID must be a number!");

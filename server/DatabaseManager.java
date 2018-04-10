@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import data.Assignment;
 import data.Course;
+import data.FileContent;
 import data.LoginCredentials;
 import data.Student;
 
@@ -74,12 +75,14 @@ class DatabaseManager implements SqlQueries {
 	}
 	
 	ArrayList<Assignment> getAssignments() throws SQLException, ParseException {
-		PreparedStatement statement = connection.prepareStatement(GET_ASSIGNMENT);
+		PreparedStatement statement = connection.prepareStatement(userType == 'P' ? GET_PROF_ASSIGNMENT : GET_STUDENT_ASSIGNMENT);
 		statement.setInt(1, courseId);
 		results = statement.executeQuery();
 		ArrayList<Assignment> assignments = new ArrayList<Assignment>();
 		while (results.next())
-			assignments.add(new Assignment(results.getInt(1), results.getString(2), results.getBoolean(3), dateFormat.parse(results.getString(4))));
+			assignments.add(new Assignment(results.getInt(1), results.getString(2), 
+					userType == 'P' ? results.getBoolean(3) : true, dateFormat.parse(results.getString(4)), 
+					userType == 'S' ? new FileContent(null, results.getString(3)) : null));
 		return assignments;
 	}
 	

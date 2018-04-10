@@ -1,7 +1,9 @@
 package server;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -24,5 +26,13 @@ class FileManager {
 		BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(path));
 		output.write(file.getContent());
 		output.close();
+	}
+	
+	byte[] retreiveFile() throws IOException {
+		BufferedInputStream input = new BufferedInputStream(new FileInputStream(path));
+		byte[] content = new byte[(int)path.length()];
+		input.read(content);
+		input.close();
+		return content;
 	}
 }

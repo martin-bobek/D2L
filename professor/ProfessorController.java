@@ -19,11 +19,11 @@ import data.Assignment;
 import data.Course;
 import data.Student;
 import data.Updatable;
-import message.RequestAssignments;
-import message.RequestCourses;
-import message.RequestStudents;
-import message.UpdateAssignment;
-import message.UpdateCourse;
+import serverMessage.AssignmentRequest;
+import serverMessage.CourseRequest;
+import serverMessage.StudentRequest;
+import serverMessage.AssignmentUpdate;
+import serverMessage.CourseUpdate;
 
 public class ProfessorController implements Controller {
 	private ProfessorView view;
@@ -32,7 +32,7 @@ public class ProfessorController implements Controller {
 	private FileHelper fileHelper = new FileHelper();
 	private AtomicBoolean locked = new AtomicBoolean(true);
 	
-	private RequestStudents search = new RequestStudents();
+	private StudentRequest search = new StudentRequest();
 	
 	public ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
 		table.reset(Course.PROF_ROW_PROPERTIES);
@@ -45,9 +45,9 @@ public class ProfessorController implements Controller {
 	
 	public void runClient() throws IOException, ClassNotFoundException {
 		view.setVisible(true);
-		server.sendObject(new RequestCourses());
+		server.sendObject(new CourseRequest());
 		while (true) {
-			server.receiveList();
+			server.receiveResponse();
 			locked.set(false);
 		}
 	}
@@ -72,7 +72,7 @@ public class ProfessorController implements Controller {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.setClearSearchEnabled(false);
-				search = new RequestStudents();
+				search = new StudentRequest();
 				search.setAll(view.getAllStudents());
 				table.clear();
 				try {
@@ -127,9 +127,9 @@ public class ProfessorController implements Controller {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
-				table.reset(Assignment.ROW_PROPERTIES);
+				table.reset(Assignment.PROF_ROW_PROPERTIES);
 				try {
-					server.sendObject(new RequestAssignments());
+					server.sendObject(new AssignmentRequest());
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -144,7 +144,7 @@ public class ProfessorController implements Controller {
 					return;
 				view.selectPage(ProfessorView.STUDENT_PAGE);
 				table.reset(Student.ROW_PROPERTIES);
-				search = new RequestStudents();
+				search = new StudentRequest();
 				view.setAllStudents(false);
 				view.setClearSearchEnabled(false);
 				try {
@@ -164,7 +164,7 @@ public class ProfessorController implements Controller {
 				view.selectPage(ProfessorView.COURSE_PAGE);
 				table.reset(Course.PROF_ROW_PROPERTIES);
 				try {
-					server.sendObject(new RequestCourses());
+					server.sendObject(new CourseRequest());
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -197,7 +197,7 @@ public class ProfessorController implements Controller {
 					if (course == null)
 						locked.set(false);
 					else
-						server.sendObject(new UpdateCourse(course));
+						server.sendObject(new CourseUpdate(course));
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -215,7 +215,7 @@ public class ProfessorController implements Controller {
 					if (assignment == null)
 						locked.set(false);
 					else
-						server.sendObject(new UpdateAssignment(assignment));
+						server.sendObject(new AssignmentUpdate(assignment));
 				} catch (IOException ex) {
 					lostConnection();
 				}
@@ -232,9 +232,9 @@ public class ProfessorController implements Controller {
 				view.setAdditionalText(course.getName(), ProfessorView.ASSIGNMENT_PAGE);
 				view.setAdditionalText(course.getName(), ProfessorView.STUDENT_PAGE);
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
-				table.reset(Assignment.ROW_PROPERTIES);
+				table.reset(Assignment.PROF_ROW_PROPERTIES);
 				try {
-					server.sendObject(new RequestAssignments(course));
+					server.sendObject(new AssignmentRequest(course));
 				} catch (IOException ex) {
 					lostConnection();
 				}

@@ -2,7 +2,7 @@ package data;
 
 import java.io.Serializable;
 
-import message.Request;
+import serverMessage.Request;
 
 public interface Updatable extends Serializable {
 	Request createRequest();

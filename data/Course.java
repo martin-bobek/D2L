@@ -1,7 +1,7 @@
 package data;
 
-import message.Request;
-import message.UpdateCourse;
+import serverMessage.Request;
+import serverMessage.CourseUpdate;
 
 public class Course implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
@@ -73,6 +73,6 @@ public class Course implements TableRow, Updatable {
 	}
 	
 	public Request createRequest() {
-		return new UpdateCourse(this);
+		return new CourseUpdate(this);
 	}
 }

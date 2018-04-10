@@ -1,19 +1,19 @@
-package message;
+package serverMessage;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 import data.Student;
 
-public class UpdateStudent implements Request {
+public class StudentUpdate implements Request {
 	private static final long serialVersionUID = 1L;
 	private final Student updated;
 
-	public UpdateStudent(Student updated) {
+	public StudentUpdate(Student updated) {
 		this.updated = updated;
 	}
 	
-	public void performAction(RequestHandler server) throws IOException, SQLException {
+	public void performAction(ServerInterface server) throws IOException, SQLException {
 		server.updateStudent(updated);
 	}
 }

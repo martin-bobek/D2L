@@ -3,8 +3,8 @@ package data;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import message.Request;
-import message.UpdateAssignment;
+import serverMessage.Request;
+import serverMessage.AssignmentUpdate;
 
 public class Assignment implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
@@ -12,12 +12,18 @@ public class Assignment implements TableRow, Updatable {
 	private static final int NAME_COL = 0;
 	private static final int DUE_COL = 1;
 	private static final int ACTIVE_COL = 2;
+	private static final int GRADE_COL = 3;
 	
-	public static final RowProperties ROW_PROPERTIES = new RowProperties(
+	public static final RowProperties PROF_ROW_PROPERTIES = new RowProperties(
 			new String[] { "Name", "Due", "Active" }, 
 			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
 			new boolean[] { false, false, true },
 			new int[] { NAME_COL, DUE_COL, ACTIVE_COL});
+	public static final RowProperties STUDENT_ROW_PROPERTIES = new RowProperties(
+			new String [] { "Name", "Due", "Grade" },
+			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.STRING },
+			new boolean[] { false, false, false },
+			new int[] { NAME_COL, DUE_COL, GRADE_COL });
 	
 	private int id;
 	private String title;
@@ -25,16 +31,16 @@ public class Assignment implements TableRow, Updatable {
 	private Date dueDate;
 	private FileContent file;
 	
-	public Assignment(int id, String title, boolean active, Date dueDate) {
+	public Assignment(int id, String title, boolean active, Date dueDate, FileContent file) {
 		this.id = id;
 		this.title = title;
 		this.active = active;
 		this.dueDate = dueDate;
+		this.file = file;
 	}
 	
 	public Assignment(String title, FileContent file, Date due) {
-		this(NEW_ID, title, false, due);
-		this.file = file;
+		this(NEW_ID, title, false, due, file);
 	}
 
 	public int getId() {
@@ -69,6 +75,8 @@ public class Assignment implements TableRow, Updatable {
 			return format.format(dueDate);
 		} if (index == ACTIVE_COL)
 			return active;
+		if (index == GRADE_COL)
+			return "--";
 		return null;
 	}
 
@@ -78,6 +86,6 @@ public class Assignment implements TableRow, Updatable {
 	}
 	
 	public Request createRequest() {
-		return new UpdateAssignment(this);
+		return new AssignmentUpdate(this);
 	}
 }

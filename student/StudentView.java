@@ -25,13 +25,13 @@ public class StudentView extends JFrame {
 	static final int COURSE_PAGE = 0;
 	static final int ASSIGNMENT_PAGE = 1;
 	private static final int NUM_PAGES = 2;
-	private static final String[] HEADERS = { "Courses" };
-	private String additionalText[] = { "", "", "" };
+	private static final String[] HEADERS = { "Courses", "Assignments" };
+	private String additionalText[] = { "", "" };
 	
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton courseViewBtn;
+	private JButton courseViewBtn, assignmentBackBtn, downloadBtn, submissionsBtn;
 	private JTable table;
 
 	public StudentView(TableModel table) {
@@ -40,6 +40,15 @@ public class StudentView extends JFrame {
 		layoutFrame();
 		this.table.setModel(table);
 		setMinimumSize(new Dimension(600, 300));
+	}
+	
+	void selectPage(int page) {
+		header.setText(HEADERS[page] + additionalText[page]);
+		remove(buttonPanels[this.page]);
+		add(buttonPanels[page], BorderLayout.SOUTH);
+		repaint();
+		this.page = page;
+		itemDeselected();
 	}
 	
 	void setAdditionalText(String text, int page) {
@@ -56,13 +65,31 @@ public class StudentView extends JFrame {
 	void itemSelected() {
 		if (page == COURSE_PAGE) {
 			courseViewBtn.setEnabled(true);
-		} 
+		} else if (page == ASSIGNMENT_PAGE) {
+			downloadBtn.setEnabled(true);
+			submissionsBtn.setEnabled(true);
+		}
 	}
 	
 	void itemDeselected() {
 		if (page == COURSE_PAGE) {
 			courseViewBtn.setEnabled(false);
-		} 
+		} else if (page == ASSIGNMENT_PAGE) {
+			downloadBtn.setEnabled(false);
+			submissionsBtn.setEnabled(false);
+		}
+	}
+	
+	void addSubmissionsListener(ActionListener listener) {
+		submissionsBtn.addActionListener(listener);
+	}
+	
+	void addDownloadListener(ActionListener listener) {
+		downloadBtn.addActionListener(listener);
+	}
+	
+	void addAssignmentBackListener(ActionListener listener) {
+		assignmentBackBtn.addActionListener(listener);
 	}
 	
 	void addCourseViewListener(ActionListener listener) {
@@ -96,7 +123,11 @@ public class StudentView extends JFrame {
 	}
 	
 	private JPanel createAssignmentButtons() {
-		return null;
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		panel.add(downloadBtn = new JButton("Download"));
+		panel.add(submissionsBtn = new JButton("Submissions"));
+		panel.add(assignmentBackBtn = new JButton("Back"));
+		return panel;
 	}
 
 	private JPanel createCourseButtons() {

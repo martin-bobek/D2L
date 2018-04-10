@@ -8,15 +8,17 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 
+import clientMessage.FileDelivery;
+import clientMessage.TableUpdate;
 import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
 import data.Student;
-import message.Request;
-import message.RequestHandler;
-import message.RequestStudents;
+import serverMessage.Request;
+import serverMessage.ServerInterface;
+import serverMessage.StudentRequest;
 
-public class ClientHandler implements Runnable, RequestHandler {
+public class ClientHandler implements Runnable, ServerInterface {
 	private final static String FILE_STORAGE = "C:\\Users\\Martin\\Desktop\\AppStorage"; 
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
@@ -33,11 +35,14 @@ public class ClientHandler implements Runnable, RequestHandler {
 	public void run() {
 		try {
 			login();
-			while (true)
-				((Request)input.readObject()).performAction(this);
+			while (true) {
+				Request request = (Request)input.readObject();
+				request.performAction(this);
+			}
 		} catch (SQLException | ClassNotFoundException | ParseException e) {
 			System.err.println("Error 2: " + e.getMessage());
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("Client disconnected.");
 			return;
 		}
@@ -48,7 +53,7 @@ public class ClientHandler implements Runnable, RequestHandler {
 	}
 	
 	public void sendCourses() throws IOException, SQLException {
-		output.writeObject(database.getCourses());
+		output.writeObject(new TableUpdate(database.getCourses()));
 	}
 	
 	public void updateCourse(Course updated) throws SQLException {
@@ -60,11 +65,11 @@ public class ClientHandler implements Runnable, RequestHandler {
 		course.setId(database.getLastId());
 		ArrayList<Course> courseList = new ArrayList<Course>();
 		courseList.add(course);
-		output.writeObject(courseList);
+		output.writeObject(new TableUpdate(courseList));
 	}
 	
 	public void sendAssignments() throws IOException, SQLException, ParseException {
-		output.writeObject(database.getAssignments());
+		output.writeObject(new TableUpdate(database.getAssignments()));
 	}
 	
 	public void updateAssignment(Assignment updated) throws SQLException {
@@ -78,27 +83,27 @@ public class ClientHandler implements Runnable, RequestHandler {
 		files.storeFile(assignment.getFile());
 		ArrayList<Assignment> assList = new ArrayList<Assignment>();
 		assList.add(assignment);
-		output.writeObject(assList);
+		output.writeObject(new TableUpdate(assList));
 	}
 	
 	public void sendEnrolledStudents(int type, Object parameter) throws IOException, SQLException {
-		if (type == RequestStudents.NAME)
+		if (type == StudentRequest.NAME)
 			database.getEnrolledStudents((String)parameter);
-		else if (type == RequestStudents.ID)
+		else if (type == StudentRequest.ID)
 			database.getEnrolledStudents((int)parameter);
 		else
 			database.getEnrolledStudents();
-		output.writeObject(database.getStudents(false));
+		output.writeObject(new TableUpdate(database.getStudents(false)));
 	}
 	
 	public void sendAllStudents(int type, Object parameter) throws IOException, SQLException {
-		if (type == RequestStudents.NAME)
+		if (type == StudentRequest.NAME)
 			database.getAllStudents((String)parameter);
-		else if (type == RequestStudents.ID)
+		else if (type == StudentRequest.ID)
 			database.getAllStudents((int)parameter);
 		else
 			database.getAllStudents();
-		output.writeObject(database.getStudents(true));
+		output.writeObject(new TableUpdate(database.getStudents(true)));
 	}
 	
 	public void updateStudent(Student updated) throws SQLException {
@@ -106,6 +111,12 @@ public class ClientHandler implements Runnable, RequestHandler {
 			database.createEnrollment(updated);
 		else
 			database.deleteEnrollment(updated);
+	}
+	
+	public void sendFile(char type, int id) throws IOException {
+		files.setPath(type, id);
+		byte[] content = files.retreiveFile();
+		output.writeObject(new FileDelivery(content));
 	}
 	
 	private void login() throws ClassNotFoundException, SQLException, IOException {

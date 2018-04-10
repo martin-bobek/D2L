@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import client.FileHelper;
 import client.InvalidParameterException;
 import data.Assignment;
-import data.FileContent;
 
 class AssignmentDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +33,6 @@ class AssignmentDialog extends JDialog {
 	private JTextField nameTxt, fileTxt, dayTxt, yearTxt;
 	private JComboBox<String> monthCmb;
 	private JButton uploadBtn, browseBtn;
-	private FileContent file;
 	private Assignment assignment;
 	
 	private AssignmentDialog(JFrame owner, FileHelper helper) {
@@ -79,8 +77,8 @@ class AssignmentDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					validateInput();
-					file = fileHelper.uploadFile(new File(fileTxt.getText()));
-					assignment = new Assignment(nameTxt.getText(), file, parseDate());
+					fileHelper.setPath(new File(fileTxt.getText()));
+					assignment = new Assignment(nameTxt.getText(), fileHelper.uploadFile(), parseDate());
 					thread.interrupt();
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(getOwner(), "File Error: " + ex.getMessage());
