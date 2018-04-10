@@ -94,7 +94,7 @@ public class StudentController implements Controller {
 				fileHelper.setPath(chooser.getSelectedFile());
 				try {
 					server.sendObject(new FileRequest(assignment));
-				} catch (IOException e1) {
+				} catch (IOException ex) {
 					lostConnection();
 				}
 			}

@@ -2,9 +2,11 @@ package professor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -26,6 +28,7 @@ import serverMessage.StudentRequest;
 import serverMessage.SubmissionRequest;
 import serverMessage.AssignmentUpdate;
 import serverMessage.CourseUpdate;
+import serverMessage.FileRequest;
 
 public class ProfessorController implements Controller {
 	private ProfessorView view;
@@ -39,6 +42,7 @@ public class ProfessorController implements Controller {
 	public ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
 		table.reset(Course.PROF_ROW_PROPERTIES);
 		server.addTable(table);
+		server.addFileHelper(fileHelper);
 		this.view = view;
 		this.table = table;
 		this.server = server;
@@ -83,7 +87,21 @@ public class ProfessorController implements Controller {
 	private void addDownloadHandler() {
 		view.addDownloadListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				if (!locked.compareAndSet(false, true)) 
+					return;
+				Submission submission = (Submission)table.getRow(view.getSelected());
+				JFileChooser chooser = new JFileChooser();
+				chooser.setSelectedFile(new File(submission.getName() + submission.getExtension()));
+				if (chooser.showSaveDialog(view) != JFileChooser.APPROVE_OPTION) {
+					locked.set(false);
+					return;
+				}
+				fileHelper.setPath(chooser.getSelectedFile());
+				try {
+					server.sendObject(new FileRequest(submission));
+				} catch (IOException ex) {
+					lostConnection();
+				}
 			}
 		});
 	}

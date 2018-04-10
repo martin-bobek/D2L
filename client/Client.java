@@ -33,6 +33,7 @@ class Client {
 			}
 			controller.runClient();
 		} catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(view, "Fatal Error: " + e.getMessage());
 			System.exit(1);
 		}

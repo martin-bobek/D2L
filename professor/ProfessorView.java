@@ -85,6 +85,7 @@ public class ProfessorView extends JFrame {
 		} else if (page == ASSIGNMENT_PAGE) {
 			dropboxBtn.setEnabled(true);
 		} else if (page == DROPBOX_PAGE) {
+			downloadBtn.setEnabled(true);
 			gradeBtn.setEnabled(true);
 		}
 	}
@@ -95,6 +96,7 @@ public class ProfessorView extends JFrame {
 		} else if (page == ASSIGNMENT_PAGE) {
 			dropboxBtn.setEnabled(false);
 		} else if (page == DROPBOX_PAGE) {
+			downloadBtn.setEnabled(false);
 			gradeBtn.setEnabled(false);
 		}
 	}
