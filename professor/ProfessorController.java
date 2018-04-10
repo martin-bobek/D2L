@@ -26,6 +26,7 @@ import serverMessage.AssignmentRequest;
 import serverMessage.CourseRequest;
 import serverMessage.StudentRequest;
 import serverMessage.SubmissionRequest;
+import serverMessage.SubmissionUpdate;
 import serverMessage.AssignmentUpdate;
 import serverMessage.CourseUpdate;
 import serverMessage.FileRequest;
@@ -79,7 +80,20 @@ public class ProfessorController implements Controller {
 	private void addGradeHandler() {
 		view.addGradeListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				int row = view.getSelected();
+				Submission submission = (Submission)table.getRow(row);
+				try {
+					Integer grade = showGradeDialog();
+					if (grade == null)
+						locked.set(false);
+					else {
+						submission.setGrade(grade);
+						table.updateRow(row);
+						server.sendObject(new SubmissionUpdate(submission));
+					}
+				} catch (IOException ex) {
+					lostConnection();
+				}
 			}
 		});
 	}
@@ -112,7 +126,7 @@ public class ProfessorController implements Controller {
 				if (!locked.compareAndSet(false, true))
 					return;
 				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
-				table.reset(Assignment.STUDENT_ROW_PROPERTIES);
+				table.reset(Assignment.PROF_ROW_PROPERTIES);
 				try {
 					server.sendObject(new AssignmentRequest());
 				} catch (IOException ex) {
@@ -325,6 +339,26 @@ public class ProfessorController implements Controller {
 					view.itemSelected();
 			}
 		});
+	}
+	
+	private Integer showGradeDialog() {
+		int grade;
+		while (true) {
+			String gradeStr = JOptionPane.showInputDialog(view, "Grade (%):", "Grade Submission", JOptionPane.PLAIN_MESSAGE);
+			if (gradeStr == null)
+				return null;
+			try {
+				grade = Integer.parseInt(gradeStr);
+				if (grade < 0)
+					JOptionPane.showMessageDialog(view, "Grade must be positive!");
+				else if (grade >= 1000)
+					JOptionPane.showMessageDialog(view, "Grade has a maximum of 3 digits");
+				else
+					return grade;
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(view, "Grade must be a number!");
+			}
+		}
 	}
 	
 	private Course showCourseDialog() {

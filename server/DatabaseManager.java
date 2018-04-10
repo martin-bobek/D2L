@@ -86,7 +86,7 @@ class DatabaseManager implements SqlQueries {
 		ArrayList<Assignment> assignments = new ArrayList<Assignment>();
 		while (results.next())
 			assignments.add(new Assignment(results.getInt(1), results.getString(2), results.getBoolean(3), 
-					dateFormat.parse(results.getString(4)), isProf ? null : results.getString(5)));
+					dateFormat.parse(results.getString(4)), isProf ? null : results.getString(5), isProf ? 0 : results.getInt(6)));
 		return assignments;
 	}
 	
@@ -190,6 +190,13 @@ class DatabaseManager implements SqlQueries {
 			submissions.add(new Submission(results.getInt(1), results.getString(2), results.getString(3), 
 					timestampFormat.parse(results.getString(4)), results.getString(5) + ' ' + results.getString(6), results.getInt(7)));
 		return submissions;
+	}
+	
+	public void updateSubmission(Submission submission) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(UPDATE_SUBMISSION);
+		statement.setInt(1, submission.getGrade());
+		statement.setInt(2, submission.getId());
+		statement.executeUpdate();
 	}
 	
 	int getLastId() throws SQLException {

@@ -108,6 +108,10 @@ public class ClientHandler implements Runnable, ServerInterface {
 			database.deleteEnrollment(updated);
 	}
 	
+	public void updateSubmission(Submission submission) throws SQLException {
+		database.updateSubmission(submission);
+	}
+	
 	public void createSubmission(Submission submission) throws SQLException, IOException {
 		database.createSubmission(submission);
 		submission.setId(database.getLastId());

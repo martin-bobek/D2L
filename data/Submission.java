@@ -22,7 +22,7 @@ public class Submission implements TableRow {
 	private final String extension;
 	private final Date timestamp;
 	private final byte[] content;
-	private final int grade;
+	private int grade;
 	private final String studentName;
 	
 	private Submission(int id, String name, String extension, byte[] content, Date timestamp, String studentName, int grade) {
@@ -49,6 +49,14 @@ public class Submission implements TableRow {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public void setGrade(int grade) {
+		this.grade = grade;
+	}
+	
+	public int getGrade() {
+		return grade;
 	}
 	
 	public void setAssignmentId(int assignmentId) {

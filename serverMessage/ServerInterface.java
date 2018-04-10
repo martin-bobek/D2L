@@ -23,4 +23,5 @@ public interface ServerInterface {
 	public void createSubmission(Submission submission) throws SQLException, IOException;
 	public void sendSubmissions(int assignmentId) throws IOException, SQLException, ParseException;
 	public void sendFile(char type, int id) throws IOException;
+	public void updateSubmission(Submission submission) throws SQLException;
 }

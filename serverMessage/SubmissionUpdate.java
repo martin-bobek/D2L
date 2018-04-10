@@ -15,6 +15,9 @@ public class SubmissionUpdate implements Request {
 	}
 	
 	public void performAction(ServerInterface server) throws IOException, SQLException, ParseException {
-		server.createSubmission(submission);
+		if (submission.getId() == Submission.NEW_ID)
+			server.createSubmission(submission);
+		else
+			server.updateSubmission(submission);
 	}
 }

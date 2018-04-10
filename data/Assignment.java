@@ -29,18 +29,20 @@ public class Assignment implements TableRow, Updatable {
 	private boolean activeSubmitted;
 	private Date dueDate;
 	private String extension;
+	private int grade;
 	private byte[] content;
 	
-	public Assignment(int id, String title, boolean activeSubmitted, Date dueDate, String extension) {
+	public Assignment(int id, String title, boolean activeSubmitted, Date dueDate, String extension, int grade) {
 		this.id = id;
 		this.title = title;
 		this.activeSubmitted = activeSubmitted;
 		this.dueDate = dueDate;
 		this.extension = extension;
+		this.grade = grade;
 	}
 	
 	public Assignment(String title, Date due, String extension, byte[] content) {
-		this(NEW_ID, title, false, due, extension);
+		this(NEW_ID, title, false, due, extension, NO_GRADE);
 		this.content = content;
 	}
 
@@ -91,7 +93,9 @@ public class Assignment implements TableRow, Updatable {
 		if (index == GRADE_COL) {
 			if (!activeSubmitted)
 				return "Unsubmitted";
-			return "Ungraded";
+			if (grade == NO_GRADE)
+				return "Ungraded";
+			return grade + "%";
 		}
 		return null;
 	}
