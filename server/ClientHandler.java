@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 import clientMessage.FileDelivery;
 import clientMessage.TableUpdate;
@@ -14,6 +14,7 @@ import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
 import data.Student;
+import data.Submission;
 import serverMessage.Request;
 import serverMessage.ServerInterface;
 import serverMessage.StudentRequest;
@@ -39,12 +40,10 @@ public class ClientHandler implements Runnable, ServerInterface {
 				Request request = (Request)input.readObject();
 				request.performAction(this);
 			}
-		} catch (SQLException | ClassNotFoundException | ParseException e) {
-			System.err.println("Error 2: " + e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (SocketException e) {
 			System.out.println("Client disconnected.");
-			return;
+		} catch (SQLException | ClassNotFoundException | ParseException | IOException e) {
+			System.err.println("Error 2: " + e.getMessage());
 		}
 	}
 	
@@ -63,9 +62,7 @@ public class ClientHandler implements Runnable, ServerInterface {
 	public void createCourse(Course course) throws SQLException, IOException {
 		database.createCourse(course);
 		course.setId(database.getLastId());
-		ArrayList<Course> courseList = new ArrayList<Course>();
-		courseList.add(course);
-		output.writeObject(new TableUpdate(courseList));
+		output.writeObject(new TableUpdate(course));
 	}
 	
 	public void sendAssignments() throws IOException, SQLException, ParseException {
@@ -81,9 +78,7 @@ public class ClientHandler implements Runnable, ServerInterface {
 		assignment.setId(database.getLastId());
 		files.setPath(FileManager.ASSIGNMENT, assignment.getId());
 		files.storeFile(assignment.getFile());
-		ArrayList<Assignment> assList = new ArrayList<Assignment>();
-		assList.add(assignment);
-		output.writeObject(new TableUpdate(assList));
+		output.writeObject(new TableUpdate(assignment));
 	}
 	
 	public void sendEnrolledStudents(int type, Object parameter) throws IOException, SQLException {
@@ -111,6 +106,17 @@ public class ClientHandler implements Runnable, ServerInterface {
 			database.createEnrollment(updated);
 		else
 			database.deleteEnrollment(updated);
+	}
+	
+	public void createSubmission(Submission submission) throws SQLException, IOException {
+		database.createSubmission(submission);
+		submission.setId(database.getLastId());
+		files.setPath(FileManager.SUBMISSION, submission.getId());
+		files.storeFile(submission.getFile());
+	}
+	
+	public void sendSubmissions(int assignmentId) throws IOException, SQLException, ParseException {
+		output.writeObject(new TableUpdate(database.getSubmissions(assignmentId)));
 	}
 	
 	public void sendFile(char type, int id) throws IOException {

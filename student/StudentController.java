@@ -17,9 +17,11 @@ import client.ServerConnection;
 import client.TableModel;
 import data.Assignment;
 import data.Course;
+import data.Submission;
 import serverMessage.AssignmentRequest;
 import serverMessage.CourseRequest;
 import serverMessage.FileRequest;
+import serverMessage.SubmissionUpdate;
 
 public class StudentController implements Controller {
 	private StudentView view;
@@ -53,6 +55,28 @@ public class StudentController implements Controller {
 		addCourseViewHandler();
 		addAssignmentBackHandler();
 		addDownloadHandler();
+		addSubmitHandler();
+	}
+	
+	private void addSubmitHandler() {
+		view.addSubmitListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int row = view.getSelected();
+				Assignment assignment = (Assignment)table.getRow(row);
+				Submission submission = SubmissionDialog.showSubmissionDialog(view, fileHelper);
+				if (submission == null)
+					return;
+				submission.setAssignmentId(assignment.getId());
+				assignment.setSubmitted(true);
+				table.updateRow(row);
+				view.itemDeselected();
+				try {
+					server.sendObject(new SubmissionUpdate(submission));
+				} catch (IOException ex) {
+					lostConnection();
+				}
+			}
+		});
 	}
 	
 	private void addDownloadHandler() {
@@ -62,7 +86,7 @@ public class StudentController implements Controller {
 					return;
 				Assignment assignment = (Assignment)table.getRow(view.getSelected());
 				JFileChooser chooser = new JFileChooser();
-				chooser.setSelectedFile(new File(assignment.getTitle() + assignment.getFile().getExtension()));
+				chooser.setSelectedFile(new File(assignment.getTitle() + assignment.getExtension()));
 				if (chooser.showSaveDialog(view) != JFileChooser.APPROVE_OPTION) {
 					locked.set(false);
 					return;

@@ -26,14 +26,16 @@ public class ProfessorView extends JFrame {
 	static final int COURSE_PAGE = 0;
 	static final int ASSIGNMENT_PAGE = 1;
 	static final int STUDENT_PAGE = 2;
-	private static final int NUM_PAGES = 3;
-	private static final String HEADERS[] = { "Courses", "Assignments", "Students" };
-	private String additionalText[] = { "", "", "" };
+	static final int DROPBOX_PAGE = 3;
+	private static final int NUM_PAGES = 4;
+	private static final String HEADERS[] = { "Courses", "Assignments", "Students", "Dropbox" };
+	private String additionalText[] = { "", "", "", "" };
 	
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn;
+	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, 
+			studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn, dropboxBackBtn, gradeBtn, downloadBtn;
 	private JCheckBox allStudentsChk;
 	private JTable table;
 
@@ -82,6 +84,8 @@ public class ProfessorView extends JFrame {
 			viewBtn.setEnabled(true);
 		} else if (page == ASSIGNMENT_PAGE) {
 			dropboxBtn.setEnabled(true);
+		} else if (page == DROPBOX_PAGE) {
+			gradeBtn.setEnabled(true);
 		}
 	}
 	
@@ -90,7 +94,25 @@ public class ProfessorView extends JFrame {
 			viewBtn.setEnabled(false);
 		} else if (page == ASSIGNMENT_PAGE) {
 			dropboxBtn.setEnabled(false);
+		} else if (page == DROPBOX_PAGE) {
+			gradeBtn.setEnabled(false);
 		}
+	}
+	
+	void addDownloadListener(ActionListener listener) {
+		downloadBtn.addActionListener(listener);
+	}
+	
+	void addGradeListener(ActionListener listener) {
+		gradeBtn.addActionListener(listener);
+	}
+	
+	void addDropboxBackHandler(ActionListener listener) {
+		dropboxBackBtn.addActionListener(listener);
+	}
+	
+	void addDropboxHandler(ActionListener listener) {
+		dropboxBtn.addActionListener(listener);
 	}
 	
 	void addClearSearchListener(ActionListener listener) {
@@ -144,6 +166,7 @@ public class ProfessorView extends JFrame {
 		buttonPanels[COURSE_PAGE] = createCourseButtons();
 		buttonPanels[ASSIGNMENT_PAGE] = createAssignmentButtons();
 		buttonPanels[STUDENT_PAGE] = createStudentButtons();
+		buttonPanels[DROPBOX_PAGE] = createDropboxButtons();
 	}
 
 	private JLabel createHeader(String title) {
@@ -186,6 +209,14 @@ public class ProfessorView extends JFrame {
 		panel.add(searchBtn = new JButton("Search"));
 		panel.add(clearSearchBtn = new JButton("Clear Search"));
 		panel.add(studentsBackBtn = new JButton("Back"));
+		return panel;
+	}
+	
+	private JPanel createDropboxButtons() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		panel.add(downloadBtn = new JButton("Download"));
+		panel.add(gradeBtn = new JButton("Grade"));
+		panel.add(dropboxBackBtn = new JButton("Back"));
 		return panel;
 	}
 	

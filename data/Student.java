@@ -11,8 +11,7 @@ public class Student implements TableRow, Updatable {
 	
 	public static final RowProperties ROW_PROPERTIES = new RowProperties( 
 			new String[] { "Id", "Name", "Enrolled" },
-			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
-			new boolean[] { false, false, true }, 
+			new Class<?>[] { String.class, String.class, Boolean.class }, 
 			new int[] { ID_COL, NAME_COL, ENROLLED_COL });
 	
 	private int id;

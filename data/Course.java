@@ -12,13 +12,11 @@ public class Course implements TableRow, Updatable {
 	
 	public static final RowProperties PROF_ROW_PROPERTIES = new RowProperties( 
 			new String[] { "Name", "Active" }, 
-			new Class<?>[] { RowProperties.STRING, RowProperties.CHECKBOX }, 
-			new boolean[] { false, true },
+			new Class<?>[] { String.class, Boolean.class }, 
 			new int[] { NAME_COL, ACTIVE_COL });
 	public static final RowProperties STUDENT_ROW_PROPERTIES = new RowProperties(
 			new String[] { "Name", "Professor" }, 
-			new Class<?>[] { RowProperties.STRING, RowProperties.STRING }, 
-			new boolean[] { false, false }, 
+			new Class<?>[] { String.class, String.class },  
 			new int[] { NAME_COL, PROF_COL });
 	
 	private int id;

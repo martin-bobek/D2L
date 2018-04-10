@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
 
 import client.TableModel;
+import data.Assignment;
 
 public class StudentView extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -31,14 +32,16 @@ public class StudentView extends JFrame {
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton courseViewBtn, assignmentBackBtn, downloadBtn, submissionsBtn;
+	private JButton courseViewBtn, assignmentBackBtn, downloadBtn, submitBtn;
 	private JTable table;
+	private TableModel tableModel;
 
 	public StudentView(TableModel table) {
 		super("Student Client");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		layoutFrame();
 		this.table.setModel(table);
+		tableModel = table;
 		setMinimumSize(new Dimension(600, 300));
 	}
 	
@@ -67,7 +70,7 @@ public class StudentView extends JFrame {
 			courseViewBtn.setEnabled(true);
 		} else if (page == ASSIGNMENT_PAGE) {
 			downloadBtn.setEnabled(true);
-			submissionsBtn.setEnabled(true);
+			submitBtn.setEnabled(!((Assignment)tableModel.getRow(getSelected())).getSubmitted());
 		}
 	}
 	
@@ -76,12 +79,12 @@ public class StudentView extends JFrame {
 			courseViewBtn.setEnabled(false);
 		} else if (page == ASSIGNMENT_PAGE) {
 			downloadBtn.setEnabled(false);
-			submissionsBtn.setEnabled(false);
+			submitBtn.setEnabled(false);
 		}
 	}
 	
-	void addSubmissionsListener(ActionListener listener) {
-		submissionsBtn.addActionListener(listener);
+	void addSubmitListener(ActionListener listener) {
+		submitBtn.addActionListener(listener);
 	}
 	
 	void addDownloadListener(ActionListener listener) {
@@ -125,7 +128,7 @@ public class StudentView extends JFrame {
 	private JPanel createAssignmentButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.add(downloadBtn = new JButton("Download"));
-		panel.add(submissionsBtn = new JButton("Submissions"));
+		panel.add(submitBtn = new JButton("Submit"));
 		panel.add(assignmentBackBtn = new JButton("Back"));
 		return panel;
 	}

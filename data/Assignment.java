@@ -8,6 +8,7 @@ import serverMessage.AssignmentUpdate;
 
 public class Assignment implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;
+	public static final int NO_GRADE = -1;
 	public static final int NEW_ID = -1;
 	private static final int NAME_COL = 0;
 	private static final int DUE_COL = 1;
@@ -16,31 +17,31 @@ public class Assignment implements TableRow, Updatable {
 	
 	public static final RowProperties PROF_ROW_PROPERTIES = new RowProperties(
 			new String[] { "Name", "Due", "Active" }, 
-			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.CHECKBOX }, 
-			new boolean[] { false, false, true },
+			new Class<?>[] { String.class, String.class, Boolean.class }, 
 			new int[] { NAME_COL, DUE_COL, ACTIVE_COL});
 	public static final RowProperties STUDENT_ROW_PROPERTIES = new RowProperties(
 			new String [] { "Name", "Due", "Grade" },
-			new Class<?>[] { RowProperties.STRING, RowProperties.STRING, RowProperties.STRING },
-			new boolean[] { false, false, false },
+			new Class<?>[] { String.class, String.class, String.class },
 			new int[] { NAME_COL, DUE_COL, GRADE_COL });
 	
 	private int id;
 	private String title;
-	private boolean active;
+	private boolean activeSubmitted;
 	private Date dueDate;
-	private FileContent file;
+	private String extension;
+	private byte[] content;
 	
-	public Assignment(int id, String title, boolean active, Date dueDate, FileContent file) {
+	public Assignment(int id, String title, boolean activeSubmitted, Date dueDate, String extension) {
 		this.id = id;
 		this.title = title;
-		this.active = active;
+		this.activeSubmitted = activeSubmitted;
 		this.dueDate = dueDate;
-		this.file = file;
+		this.extension = extension;
 	}
 	
-	public Assignment(String title, FileContent file, Date due) {
-		this(NEW_ID, title, false, due, file);
+	public Assignment(String title, Date due, String extension, byte[] content) {
+		this(NEW_ID, title, false, due, extension);
+		this.content = content;
 	}
 
 	public int getId() {
@@ -56,15 +57,27 @@ public class Assignment implements TableRow, Updatable {
 	}
 	
 	public boolean getActive() {
-		return active;
+		return activeSubmitted;
 	}
 	
-	public FileContent getFile() {
-		return file;
+	public void setSubmitted(boolean submitted) {
+		activeSubmitted = submitted;
+	}
+	
+	public boolean getSubmitted() {
+		return activeSubmitted;
 	}
 	
 	public Date getDueDate() {
 		return dueDate;
+	}
+	
+	public String getExtension() {
+		return extension;
+	}
+	
+	public byte[] getFile() {
+		return content;
 	}
 
 	public Object getColumn(int index) {
@@ -74,15 +87,18 @@ public class Assignment implements TableRow, Updatable {
 			SimpleDateFormat format = new SimpleDateFormat("MMM dd yyyy");
 			return format.format(dueDate);
 		} if (index == ACTIVE_COL)
-			return active;
-		if (index == GRADE_COL)
-			return "--";
+			return activeSubmitted;
+		if (index == GRADE_COL) {
+			if (!activeSubmitted)
+				return "Unsubmitted";
+			return "Ungraded";
+		}
 		return null;
 	}
 
 	public void setColumn(Object value, int index) {
 		if (index == ACTIVE_COL)
-			active = (boolean)value;
+			activeSubmitted = (boolean)value;
 	}
 	
 	public Request createRequest() {

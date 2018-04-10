@@ -7,8 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import data.FileContent;
-
 public class FileHelper {
 	private File file;
 	
@@ -16,13 +14,28 @@ public class FileHelper {
 		this.file = file;
 	}
 	
-	public FileContent uploadFile() throws IOException {
+	public String getExtension() {
+		String name = file.toString();
+		int extStart = name.lastIndexOf('.');
+		if (extStart == -1)
+			return "";
+		return name.substring(extStart);
+	}
+	
+	public String getName() {
+		String name = file.getName();
+		int extStart = name.lastIndexOf('.');
+		if (extStart == -1)
+			return name;
+		return name.substring(0, extStart);
+	}
+	
+	public byte[] uploadFile() throws IOException {
 		byte[] content = new byte[validateLength()];
 		BufferedInputStream input = new BufferedInputStream(new FileInputStream(file));
 		input.read(content);
 		input.close();
-		String name = file.toString();
-		return new FileContent(content, name.substring(name.lastIndexOf('.')));
+		return content;
 	}
 	
 	public void downloadFile(byte[] content) throws IOException {

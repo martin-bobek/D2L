@@ -78,7 +78,7 @@ class AssignmentDialog extends JDialog {
 				try {
 					validateInput();
 					fileHelper.setPath(new File(fileTxt.getText()));
-					assignment = new Assignment(nameTxt.getText(), fileHelper.uploadFile(), parseDate());
+					assignment = new Assignment(nameTxt.getText(), parseDate(), fileHelper.getExtension(), fileHelper.uploadFile());
 					thread.interrupt();
 				} catch (IOException ex) {
 					JOptionPane.showMessageDialog(getOwner(), "File Error: " + ex.getMessage());

@@ -7,10 +7,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import data.FileContent;
-
 class FileManager {
 	static final char ASSIGNMENT = 'A';
+	static final char SUBMISSION = 'S';
 	private final String workingDir;
 	private File path;
 	
@@ -22,9 +21,9 @@ class FileManager {
 		path = new File(workingDir + '\\' + type + '\\' + id);
 	}
 	
-	void storeFile(FileContent file) throws IOException {
+	void storeFile(byte[] file) throws IOException {
 		BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(path));
-		output.write(file.getContent());
+		output.write(file);
 		output.close();
 	}
 	

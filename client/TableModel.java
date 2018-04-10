@@ -16,7 +16,7 @@ public class TableModel extends AbstractTableModel {
 		rows = new ArrayList<TableRow>();
 	}
 	
-	void updateRow(int row) {
+	public void updateRow(int row) {
 		fireTableRowsUpdated(row, row);
 	}
 	
@@ -61,7 +61,7 @@ public class TableModel extends AbstractTableModel {
 	}
 	
 	public boolean isCellEditable(int row, int col) {
-		return properties.getEditable(col);
+		return properties.getType(col) == Boolean.class;
 	}
 	
 	public Object getValueAt(int row, int col) {

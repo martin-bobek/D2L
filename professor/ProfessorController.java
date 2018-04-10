@@ -18,10 +18,12 @@ import client.TableModel;
 import data.Assignment;
 import data.Course;
 import data.Student;
+import data.Submission;
 import data.Updatable;
 import serverMessage.AssignmentRequest;
 import serverMessage.CourseRequest;
 import serverMessage.StudentRequest;
+import serverMessage.SubmissionRequest;
 import serverMessage.AssignmentUpdate;
 import serverMessage.CourseUpdate;
 
@@ -64,6 +66,60 @@ public class ProfessorController implements Controller {
 		addAllStudentsHandler();
 		addSearchHandler();
 		addClearSearchHandler();
+		addDropboxHandler();
+		addDropboxBackHandler();
+		addDownloadHandler();
+		addGradeHandler();
+	}
+	
+	private void addGradeHandler() {
+		view.addGradeListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+	}
+	
+	private void addDownloadHandler() {
+		view.addDownloadListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+	}
+	
+	private void addDropboxBackHandler() {
+		view.addDropboxBackHandler(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				view.selectPage(ProfessorView.ASSIGNMENT_PAGE);
+				table.reset(Assignment.STUDENT_ROW_PROPERTIES);
+				try {
+					server.sendObject(new AssignmentRequest());
+				} catch (IOException ex) {
+					lostConnection();
+				}
+			}
+		});
+	}
+	
+	private void addDropboxHandler() {
+		view.addDropboxHandler(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				Assignment assignment = (Assignment)table.getRow(view.getSelected());
+				view.selectPage(ProfessorView.DROPBOX_PAGE);
+				view.setAdditionalText(assignment.getTitle(), ProfessorView.DROPBOX_PAGE);
+				table.reset(Submission.ROW_PROPERTIES);
+				try {
+					server.sendObject(new SubmissionRequest(assignment));
+				} catch (IOException e1) {
+					lostConnection();
+				}
+			}
+		});
 	}
 	
 	private void addClearSearchHandler() {
