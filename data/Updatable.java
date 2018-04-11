@@ -1,6 +1,6 @@
 package data;
 
-import serverMessage.Request;
+import request.Request;
 
 public interface Updatable {
 	Request createRequest();

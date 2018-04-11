@@ -1,10 +1,8 @@
-package professor;
+package dialog;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -14,7 +12,6 @@ import java.util.Date;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +23,7 @@ import client.FileHelper;
 import client.InvalidParameterException;
 import data.Assignment;
 
-class AssignmentDialog extends JDialog {
+public class AssignmentDialog extends CustomDialog {
 	private static final long serialVersionUID = 1L;
 	private static final String[] MONTHS = { "", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
 	private final FileHelper fileHelper;
@@ -36,29 +33,21 @@ class AssignmentDialog extends JDialog {
 	private Assignment assignment;
 	
 	private AssignmentDialog(JFrame owner, FileHelper helper) {
-		super(owner, "Upload Assignment", true);
+		super(owner, "Upload Assignment");
 		fileHelper = helper;
-		layoutDialog();
 		addHandlers();
-		setResizable(false);
-		setLocationRelativeTo(owner);
 	}
 	
-	static Assignment showAssignmentDialog(JFrame owner, FileHelper helper) {
+	public static Assignment showAssignmentDialog(JFrame owner, FileHelper helper) {
 		AssignmentDialog dialog = new AssignmentDialog(owner, helper);
-		dialog.setVisible(true);
-		try {
-			Thread.sleep(Long.MAX_VALUE);
-		} catch (InterruptedException e) {
-			dialog.dispose();
-		}
+		dialog.runDialog();
 		return dialog.assignment;
 	}
 	
-	private void addHandlers() {
+	void addHandlers() {
+		super.addHandlers();
 		addUploadHandler();
 		addBrowseHandler();
-		addCloseHandler();
 	}
 	
 	private void addBrowseHandler() {
@@ -91,17 +80,7 @@ class AssignmentDialog extends JDialog {
 		});
 	}
 	
-	private void addCloseHandler() {
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		final Thread thread = Thread.currentThread();
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				thread.interrupt();
-			}
-		});
-	}
-	
-	private void layoutDialog() {
+	void layoutDialog() {
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		add(createNameRow());
 		add(createDateRow());

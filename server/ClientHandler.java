@@ -11,16 +11,16 @@ import java.text.ParseException;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import clientMessage.FileDelivery;
-import clientMessage.TableUpdate;
 import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
 import data.Student;
 import data.Submission;
-import serverMessage.Request;
-import serverMessage.ServerInterface;
-import serverMessage.StudentRequest;
+import request.Request;
+import request.ServerInterface;
+import request.StudentRequest;
+import response.FileDelivery;
+import response.TableUpdate;
 
 public class ClientHandler implements Runnable, ServerInterface {
 	private final static String FILE_STORAGE = "C:\\Users\\Martin\\Desktop\\AppStorage"; 

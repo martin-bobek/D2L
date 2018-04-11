@@ -1,6 +1,6 @@
 package server;
 
-import clientMessage.LoginResponse;
+import response.LoginResponse;
 
 class LoginData {
 	private final String email;

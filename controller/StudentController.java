@@ -1,58 +1,40 @@
-package student;
+package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import client.Controller;
-import client.FileHelper;
 import client.ServerConnection;
 import client.TableModel;
 import data.Assignment;
 import data.Course;
 import data.Submission;
-import serverMessage.AssignmentRequest;
-import serverMessage.CourseRequest;
-import serverMessage.EmailRequest;
-import serverMessage.FileRequest;
-import serverMessage.SubmissionUpdate;
+import dialog.SubmissionDialog;
+import request.AssignmentRequest;
+import request.CourseRequest;
+import request.EmailRequest;
+import request.FileRequest;
+import request.SubmissionUpdate;
 import view.StudentView;
 
-public class StudentController implements Controller {
+public class StudentController extends Controller {
 	private StudentView view;
-	private TableModel table;
-	private ServerConnection server;
-	private FileHelper fileHelper = new FileHelper();
-	private AtomicBoolean locked = new AtomicBoolean(true);
-	
 	
 	public StudentController(StudentView view, TableModel table, ServerConnection server) {
+		super(table, server);
 		table.reset(Course.STUDENT_ROW_PROPERTIES);
-		server.addTable(table);
-		server.addFileHelper(fileHelper);
 		this.view = view;
-		this.table = table;
-		this.server = server;
 		subscribeHandlers();
-	}
-	
-	public void runClient() throws IOException, ClassNotFoundException {
 		view.setVisible(true);
-		server.sendObject(new CourseRequest());
-		while (true) {
-			server.receiveResponse();
-			locked.set(false);
-		}
 	}
 	
-	private void subscribeHandlers() {
+	void subscribeHandlers() {
 		addSelectionHandler();
 		addCourseViewHandler();
 		addAssignmentBackHandler();
@@ -84,7 +66,7 @@ public class StudentController implements Controller {
 				else
 					server.sendObject(new EmailRequest(subject, content));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 				view.selectPage(StudentView.ASSIGNMENT_PAGE);
 			}
@@ -115,7 +97,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new SubmissionUpdate(submission));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -137,7 +119,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new FileRequest(assignment));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -153,7 +135,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new CourseRequest());
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -171,7 +153,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new AssignmentRequest(course));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -186,10 +168,5 @@ public class StudentController implements Controller {
 					view.itemSelected();
 			}
 		});
-	}
-	
-	private void connectionLost() {
-		JOptionPane.showMessageDialog(view, "Lost connection to server!");
-		System.exit(1);
 	}
 }

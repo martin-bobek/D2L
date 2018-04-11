@@ -9,12 +9,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import clientMessage.LoginResponse;
 import data.Assignment;
 import data.Course;
 import data.LoginCredentials;
 import data.Student;
 import data.Submission;
+import response.LoginResponse;
 
 class DatabaseManager implements SqlQueries {
 	private static final String DATABASE = "ApplicationData";

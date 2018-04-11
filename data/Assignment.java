@@ -3,8 +3,8 @@ package data;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import serverMessage.Request;
-import serverMessage.AssignmentUpdate;
+import request.AssignmentUpdate;
+import request.Request;
 
 public class Assignment implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;

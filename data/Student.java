@@ -1,7 +1,7 @@
 package data;
 
-import serverMessage.Request;
-import serverMessage.StudentUpdate;
+import request.Request;
+import request.StudentUpdate;
 
 public class Student implements TableRow, Updatable {
 	private static final long serialVersionUID = 1L;

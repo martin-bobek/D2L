@@ -2,9 +2,10 @@ package client;
 
 import javax.swing.JOptionPane;
 
-import clientMessage.LoginResponse;
-import professor.ProfessorController;
-import student.StudentController;
+import controller.Controller;
+import controller.ProfessorController;
+import controller.StudentController;
+import response.LoginResponse;
 import view.ProfessorView;
 import view.StudentView;
 import view.View;

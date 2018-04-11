@@ -1,14 +1,11 @@
-package professor;
+package dialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,9 +14,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import client.InvalidParameterException;
-import serverMessage.StudentRequest;
+import request.StudentRequest;
 
-class SearchDialog extends JDialog {
+public class SearchDialog extends CustomDialog {
 	private static final long serialVersionUID = 1L;
 	private JRadioButton idRdio, nameRdio;
 	private JTextField searchTxt;
@@ -27,27 +24,19 @@ class SearchDialog extends JDialog {
 	private StudentRequest request;
 	
 	private SearchDialog(JFrame owner) {
-		super(owner, "Search Students", true);
-		layoutDialog();
+		super(owner, "Search Students");
 		addHandlers();
-		setResizable(false);
-		setLocationRelativeTo(owner);
 	}
 	
-	static StudentRequest showSearchDialog(JFrame owner) {
+	public static StudentRequest showSearchDialog(JFrame owner) {
 		SearchDialog dialog = new SearchDialog(owner);
-		dialog.setVisible(true);
-		try {
-			Thread.sleep(Long.MAX_VALUE);
-		} catch (InterruptedException e) {
-			dialog.dispose();
-		}
+		dialog.runDialog();
 		return dialog.request;
 	}
 	
-	private void addHandlers() {
+	void addHandlers() {
+		super.addHandlers();
 		addSearchHandler();
-		addCloseHandler();
 	}
 	
 	private void addSearchHandler() {
@@ -71,23 +60,11 @@ class SearchDialog extends JDialog {
 		
 	}
 	
-	private void addCloseHandler() {
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		final Thread thread = Thread.currentThread();
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				thread.interrupt();
-			}
-		});
-	}
-	
-	
-	private void layoutDialog() {
+	void layoutDialog() {
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		add(createSearchType());
 		add(createSearchParameter());
 		add(createSearchButton());
-		pack();
 	}
 	
 	private JPanel createSearchType() {

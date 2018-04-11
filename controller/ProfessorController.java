@@ -1,10 +1,9 @@
-package professor;
+package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -13,8 +12,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import client.Controller;
-import client.FileHelper;
 import client.ServerConnection;
 import client.TableModel;
 import data.Assignment;
@@ -22,46 +19,33 @@ import data.Course;
 import data.Student;
 import data.Submission;
 import data.Updatable;
-import serverMessage.AssignmentRequest;
-import serverMessage.CourseRequest;
-import serverMessage.StudentRequest;
-import serverMessage.SubmissionRequest;
-import serverMessage.SubmissionUpdate;
+import dialog.AssignmentDialog;
+import dialog.SearchDialog;
+import request.AssignmentRequest;
+import request.AssignmentUpdate;
+import request.CourseRequest;
+import request.CourseUpdate;
+import request.EmailRequest;
+import request.FileRequest;
+import request.StudentRequest;
+import request.SubmissionRequest;
+import request.SubmissionUpdate;
 import view.ProfessorView;
-import serverMessage.AssignmentUpdate;
-import serverMessage.CourseUpdate;
-import serverMessage.EmailRequest;
-import serverMessage.FileRequest;
 
-public class ProfessorController implements Controller {
+public class ProfessorController extends Controller {
 	private ProfessorView view;
-	private TableModel table;
-	private ServerConnection server;
-	private FileHelper fileHelper = new FileHelper();
-	private AtomicBoolean locked = new AtomicBoolean(true);
 	
 	private StudentRequest search = new StudentRequest();
 	
 	public ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
+		super(table, server);
 		table.reset(Course.PROF_ROW_PROPERTIES);
-		server.addTable(table);
-		server.addFileHelper(fileHelper);
 		this.view = view;
-		this.table = table;
-		this.server = server;
 		subscribeHandlers();
-	}
-	
-	public void runClient() throws IOException, ClassNotFoundException {
 		view.setVisible(true);
-		server.sendObject(new CourseRequest());
-		while (true) {
-			server.receiveResponse();
-			locked.set(false);
-		}
 	}
 	
-	private void subscribeHandlers() {
+	void subscribeHandlers() {
 		addViewHandler();
 		addTableChangedHandler();
 		addCreateCourseHandler();
@@ -103,7 +87,7 @@ public class ProfessorController implements Controller {
 				else
 					server.sendObject(new EmailRequest(subject, content));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 				view.selectPage(ProfessorView.STUDENT_PAGE);
 			}
@@ -134,7 +118,7 @@ public class ProfessorController implements Controller {
 						server.sendObject(new SubmissionUpdate(submission));
 					}
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -156,7 +140,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(new FileRequest(submission));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -172,7 +156,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(new AssignmentRequest());
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -190,7 +174,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(new SubmissionRequest(assignment));
 				} catch (IOException e1) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -208,7 +192,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(search);
 				} catch (IOException e1) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -229,7 +213,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(search);
 				} catch (IOException e1) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -245,7 +229,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(search);
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}			
 		});
@@ -261,7 +245,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(new AssignmentRequest());
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -280,7 +264,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(search);
 				} catch (IOException e1) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -296,7 +280,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(new CourseRequest());
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -311,7 +295,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(row.createRequest());
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -329,7 +313,7 @@ public class ProfessorController implements Controller {
 					else
 						server.sendObject(new CourseUpdate(course));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -347,7 +331,7 @@ public class ProfessorController implements Controller {
 					else
 						server.sendObject(new AssignmentUpdate(assignment));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -366,7 +350,7 @@ public class ProfessorController implements Controller {
 				try {
 					server.sendObject(new AssignmentRequest(course));
 				} catch (IOException ex) {
-					connectionLost();
+					connectionLost(view);
 				}
 			}
 		});
@@ -415,10 +399,5 @@ public class ProfessorController implements Controller {
 			else
 				return new Course(name);
 		}
-	}
-	
-	private void connectionLost() {
-		JOptionPane.showMessageDialog(view, "Lost connection to server!");
-		System.exit(1);
 	}
 }

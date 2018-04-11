@@ -7,10 +7,10 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import clientMessage.ClientInterface;
-import clientMessage.LoginResponse;
-import clientMessage.Response;
 import data.TableRow;
+import response.ClientInterface;
+import response.LoginResponse;
+import response.Response;
 
 public class ServerConnection implements ClientInterface {
 	private Socket socket;

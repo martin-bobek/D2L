@@ -1,4 +1,4 @@
-package clientMessage;
+package response;
 
 import java.util.ArrayList;
 
