@@ -40,6 +40,7 @@ abstract public class View extends JFrame {
 	View(String title, TableModel table, String[] headers) {
 		super(title);
 		this.headers = headers;
+		buttonPanels = new JPanel[headers.length];
 		this.addText = new String[headers.length];
 		for (int i = 0; i < headers.length; i++)
 			this.addText[i] = "";
@@ -104,6 +105,10 @@ abstract public class View extends JFrame {
 		emailContent.setText("");
 	}
 	
+	void layoutButtonPanels() {
+		buttonPanels[EMAIL_PAGE] = createEmailButtons();
+	}
+	
 	private void layoutFrame() {
 		layoutButtonPanels();
 		add(createHeader(), BorderLayout.NORTH);
@@ -111,8 +116,6 @@ abstract public class View extends JFrame {
 		add(buttonPanels[page], BorderLayout.SOUTH);
 		emailEditor = createEmailEditor();
 	}
-	
-	abstract void layoutButtonPanels();
 	
 	private JPanel createTextArea() {
 		table = new JTable();
@@ -131,7 +134,7 @@ abstract public class View extends JFrame {
 		return header;
 	}
 	
-	JPanel createEmailEditor() {
+	private JPanel createEmailEditor() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
 		panel.add(createEmailHeader(), BorderLayout.NORTH);
@@ -139,7 +142,7 @@ abstract public class View extends JFrame {
 		return panel;
 	}
 	
-	JPanel createEmailButtons() {
+	private JPanel createEmailButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.add(sendBtn = new JButton("Send"));
 		panel.add(cancelBtn = new JButton("Cancel"));

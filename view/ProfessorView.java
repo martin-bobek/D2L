@@ -17,7 +17,6 @@ public class ProfessorView extends View {
 	public static final int ASSIGNMENT_PAGE = 2;
 	public static final int STUDENT_PAGE = 3;
 	public static final int DROPBOX_PAGE = 4;
-	private static final int NUM_PAGES = 5;
 	
 	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, emailBtn,  
 			studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn, dropboxBackBtn, gradeBtn, downloadBtn;
@@ -120,12 +119,11 @@ public class ProfessorView extends View {
 	}
 	
 	void layoutButtonPanels() {
-		buttonPanels = new JPanel[NUM_PAGES];
+		super.layoutButtonPanels();
 		buttonPanels[COURSE_PAGE] = createCourseButtons();
 		buttonPanels[ASSIGNMENT_PAGE] = createAssignmentButtons();
 		buttonPanels[STUDENT_PAGE] = createStudentButtons();
 		buttonPanels[DROPBOX_PAGE] = createDropboxButtons();
-		buttonPanels[EMAIL_PAGE] = createEmailButtons();
 	}
 	
 	private JPanel createCourseButtons() {

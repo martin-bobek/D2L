@@ -14,7 +14,6 @@ public class StudentView extends View {
 	public static final int NO_SELECTION = -1;
 	public static final int COURSE_PAGE = 0;
 	public static final int ASSIGNMENT_PAGE = 2;
-	private static final int NUM_PAGES = 3;
 	
 	private JButton courseViewBtn, assignmentBackBtn, downloadBtn, submitBtn, emailBtn;
 	private TableModel tableModel;
@@ -65,7 +64,7 @@ public class StudentView extends View {
 	}
 	
 	void layoutButtonPanels() {
-		buttonPanels = new JPanel[NUM_PAGES];
+		super.layoutButtonPanels();
 		buttonPanels[COURSE_PAGE] = createCourseButtons();
 		buttonPanels[ASSIGNMENT_PAGE] = createAssignmentButtons();
 	}

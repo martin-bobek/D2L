@@ -20,6 +20,7 @@ import data.Course;
 import data.Submission;
 import serverMessage.AssignmentRequest;
 import serverMessage.CourseRequest;
+import serverMessage.EmailRequest;
 import serverMessage.FileRequest;
 import serverMessage.SubmissionUpdate;
 import view.StudentView;
@@ -57,6 +58,46 @@ public class StudentController implements Controller {
 		addAssignmentBackHandler();
 		addDownloadHandler();
 		addSubmitHandler();
+		addEmailHandler();
+		addSendHandler();
+		addCancelHandler();
+	}
+	
+	private void addCancelHandler() {
+		view.addCancelListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				view.selectPage(StudentView.ASSIGNMENT_PAGE);
+			}
+		});
+	}
+	
+	private void addSendHandler() {
+		view.addSendListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String subject = view.getSubject();
+				String content = view.getContent();
+				try {
+				if (content.isEmpty())
+					JOptionPane.showMessageDialog(view, "The content area cannot be empty!");
+				else if (subject.isEmpty())
+					JOptionPane.showMessageDialog(view, "The subject line cannot be empty!");
+				else
+					server.sendObject(new EmailRequest(subject, content));
+				} catch (IOException ex) {
+					connectionLost();
+				}
+				view.selectPage(StudentView.ASSIGNMENT_PAGE);
+			}
+		});
+	}
+	
+	private void addEmailHandler() {
+		view.addEmailListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				view.clearEmail();
+				view.selectPage(StudentView.EMAIL_PAGE);
+			}
+		});
 	}
 	
 	private void addSubmitHandler() {
@@ -74,7 +115,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new SubmissionUpdate(submission));
 				} catch (IOException ex) {
-					lostConnection();
+					connectionLost();
 				}
 			}
 		});
@@ -96,7 +137,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new FileRequest(assignment));
 				} catch (IOException ex) {
-					lostConnection();
+					connectionLost();
 				}
 			}
 		});
@@ -112,7 +153,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new CourseRequest());
 				} catch (IOException ex) {
-					lostConnection();
+					connectionLost();
 				}
 			}
 		});
@@ -130,7 +171,7 @@ public class StudentController implements Controller {
 				try {
 					server.sendObject(new AssignmentRequest(course));
 				} catch (IOException ex) {
-					lostConnection();
+					connectionLost();
 				}
 			}
 		});
@@ -147,7 +188,7 @@ public class StudentController implements Controller {
 		});
 	}
 	
-	private void lostConnection() {
+	private void connectionLost() {
 		JOptionPane.showMessageDialog(view, "Lost connection to server!");
 		System.exit(1);
 	}
