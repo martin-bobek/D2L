@@ -8,8 +8,10 @@ import java.net.SocketException;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import clientMessage.FileDelivery;
-import clientMessage.LoginResponse;
 import clientMessage.TableUpdate;
 import data.Assignment;
 import data.Course;
@@ -45,7 +47,7 @@ public class ClientHandler implements Runnable, ServerInterface {
 			}
 		} catch (SocketException e) {
 			System.out.println("Client disconnected.");
-		} catch (SQLException | ClassNotFoundException | ParseException | IOException e) {
+		} catch (SQLException | ClassNotFoundException | ParseException | IOException | MessagingException e) {
 			System.err.println("Error 2: " + e.getMessage());
 		}
 	}
@@ -132,13 +134,19 @@ public class ClientHandler implements Runnable, ServerInterface {
 		output.writeObject(new FileDelivery(content));
 	}
 	
-	private void login() throws ClassNotFoundException, SQLException, IOException {
-		LoginResponse response;
+	private void login() throws ClassNotFoundException, SQLException, IOException, AddressException {
+		LoginData response;
 		do {
 			LoginCredentials credentials = (LoginCredentials)input.readObject();
 			response = database.validateLogin(credentials);
-			output.writeObject(response);
-		} while (!response.success());
-		email.startSession(database.getEmailCredentials());
+			output.writeObject(response.getLogin());
+		} while (!response.getLogin().success());
+		email.startSession(response.getEmail(), response.getPassword());
+	}
+
+	public void sendEmail(String subject, String content) throws SQLException, MessagingException {
+		email.setContent(subject, content);
+		email.setRecipients(database.getRecipients());
+		email.sendMessage();
 	}
 }

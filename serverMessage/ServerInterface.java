@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import javax.mail.MessagingException;
+
 import data.Assignment;
 import data.Course;
 import data.Student;
@@ -24,4 +26,5 @@ public interface ServerInterface {
 	public void sendSubmissions(int assignmentId) throws IOException, SQLException, ParseException;
 	public void sendFile(char type, int id) throws IOException;
 	public void updateSubmission(Submission submission) throws SQLException;
+	public void sendEmail(String subject, String content) throws SQLException, MessagingException;
 }

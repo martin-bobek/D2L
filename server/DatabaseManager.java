@@ -9,9 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-
 import clientMessage.LoginResponse;
 import data.Assignment;
 import data.Course;
@@ -40,7 +37,7 @@ class DatabaseManager implements SqlQueries {
 		this.courseId = courseId;
 	}
 	
-	LoginResponse validateLogin(LoginCredentials credentials) throws SQLException {
+	LoginData validateLogin(LoginCredentials credentials) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(LOGIN);
 		statement.setInt(1, credentials.getUserId());
 		statement.setString(2, credentials.getPassword());
@@ -49,9 +46,10 @@ class DatabaseManager implements SqlQueries {
 			userId = credentials.getUserId();
 			char userType = results.getString(1).charAt(0);
 			isProf = userType == 'P'; 
-			return new LoginResponse(userType, results.getString(2) + ' ' + results.getString(3));
+			return new LoginData(new LoginResponse(userType, results.getString(2) + ' ' + results.getString(3)), 
+					results.getString(4), results.getString(5));
 		}
-		return new LoginResponse();
+		return new LoginData();
 	}
 	
 	ArrayList<Course> getCourses() throws SQLException {
@@ -209,17 +207,13 @@ class DatabaseManager implements SqlQueries {
 		return results.getInt(1);
 	}
 
-	Authenticator getEmailCredentials() throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(EMAIL_LOGIN);
-		statement.setInt(1, userId);
+	ArrayList<String> getRecipients() throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(isProf ? PROF_RECIPIENTS : STUDENT_RECIPIENT);
+		statement.setInt(1, courseId);
 		results = statement.executeQuery();
-		results.next();
-		final String address = results.getString(1);
-		final String password = results.getString(2);
-		return new Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(address, password);
-			}
-		};
+		ArrayList<String> emails = new ArrayList<String>();
+		while (results.next())
+			emails.add(results.getString(1));
+		return emails;
 	}
 }

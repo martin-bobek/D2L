@@ -42,6 +42,8 @@ public class ProfessorView extends JFrame {
 	private JCheckBox allStudentsChk;
 	private JPanel emailEditor, tablePanel;
 	private JTable table;
+	private JTextField subjectTxt;
+	private JTextArea emailContent;
 
 	public ProfessorView(String name, TableModel table) {
 		super("Professor Client");
@@ -57,6 +59,19 @@ public class ProfessorView extends JFrame {
 			additionalText[page] = " - " + text.substring(0, 33) + "...";
 		else
 			additionalText[page] = " - " + text;
+	}
+	
+	String getSubject() {
+		return subjectTxt.getText();
+	}
+	
+	String getContent() {
+		return emailContent.getText();
+	}
+	
+	void clearEmail() {
+		subjectTxt.setText("");
+		emailContent.setText("");
 	}
 	
 	void setClearSearchEnabled(boolean enabled) {
@@ -193,14 +208,14 @@ public class ProfessorView extends JFrame {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
 		panel.add(createEmailHeader(), BorderLayout.NORTH);
-		panel.add(new JScrollPane(new JTextArea()), BorderLayout.CENTER);
+		panel.add(new JScrollPane(emailContent = new JTextArea()), BorderLayout.CENTER);
 		return panel;
 	}
 	
 	private JPanel createEmailHeader() {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new JLabel("  Subject: "), BorderLayout.WEST);
-		panel.add(new JTextField(20), BorderLayout.CENTER);
+		panel.add(subjectTxt = new JTextField(), BorderLayout.CENTER);
 		return panel;
 	}
 	
