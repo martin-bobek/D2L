@@ -1,18 +1,17 @@
 package client;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import clientMessage.LoginResponse;
 import professor.ProfessorController;
-import professor.ProfessorView;
 import student.StudentController;
-import student.StudentView;
+import view.ProfessorView;
+import view.StudentView;
+import view.View;
 
 class Client {
 	public static void main(String[] args) {
-		
-		JFrame view = null;
+		View view = null;
 		try {
 			Controller controller = null;
 			ServerConnection server = new ServerConnection();

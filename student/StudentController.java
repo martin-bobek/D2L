@@ -22,6 +22,7 @@ import serverMessage.AssignmentRequest;
 import serverMessage.CourseRequest;
 import serverMessage.FileRequest;
 import serverMessage.SubmissionUpdate;
+import view.StudentView;
 
 public class StudentController implements Controller {
 	private StudentView view;

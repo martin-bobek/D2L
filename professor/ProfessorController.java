@@ -27,6 +27,7 @@ import serverMessage.CourseRequest;
 import serverMessage.StudentRequest;
 import serverMessage.SubmissionRequest;
 import serverMessage.SubmissionUpdate;
+import view.ProfessorView;
 import serverMessage.AssignmentUpdate;
 import serverMessage.CourseUpdate;
 import serverMessage.EmailRequest;

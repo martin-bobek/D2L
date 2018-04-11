@@ -22,6 +22,7 @@ import javax.swing.JTextField;
 import client.FileHelper;
 import client.InvalidParameterException;
 import data.Submission;
+import view.StudentView;
 
 public class SubmissionDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
