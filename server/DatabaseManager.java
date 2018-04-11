@@ -9,6 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+
 import clientMessage.LoginResponse;
 import data.Assignment;
 import data.Course;
@@ -204,5 +207,19 @@ class DatabaseManager implements SqlQueries {
 		results = connection.prepareStatement(GET_LAST_ID).executeQuery();
 		results.next();
 		return results.getInt(1);
+	}
+
+	Authenticator getEmailCredentials() throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(EMAIL_LOGIN);
+		statement.setInt(1, userId);
+		results = statement.executeQuery();
+		results.next();
+		final String address = results.getString(1);
+		final String password = results.getString(2);
+		return new Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(address, password);
+			}
+		};
 	}
 }

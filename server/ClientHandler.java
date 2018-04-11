@@ -26,12 +26,14 @@ public class ClientHandler implements Runnable, ServerInterface {
 	private ObjectOutputStream output;
 	private DatabaseManager database;
 	private FileManager files;
+	private EmailSender email;
 	
 	ClientHandler(Socket socket) throws IOException, SQLException {
 		output = new ObjectOutputStream(socket.getOutputStream());
 		input = new ObjectInputStream(socket.getInputStream());
 		database = new DatabaseManager();
 		files = new FileManager(FILE_STORAGE);
+		email = new EmailSender();
 	}
 	
 	public void run() {
@@ -137,5 +139,6 @@ public class ClientHandler implements Runnable, ServerInterface {
 			response = database.validateLogin(credentials);
 			output.writeObject(response);
 		} while (!response.success());
+		email.startSession(database.getEmailCredentials());
 	}
 }

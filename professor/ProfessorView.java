@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionListener;
@@ -27,16 +29,18 @@ public class ProfessorView extends JFrame {
 	static final int ASSIGNMENT_PAGE = 1;
 	static final int STUDENT_PAGE = 2;
 	static final int DROPBOX_PAGE = 3;
-	private static final int NUM_PAGES = 4;
-	private static final String HEADERS[] = { "Courses", "Assignments", "Students", "Dropbox" };
-	private String additionalText[] = { "", "", "", "" };
+	static final int EMAIL_PAGE = 4;
+	private static final int NUM_PAGES = 5;
+	private static final String HEADERS[] = { "Courses", "Assignments", "Students", "Dropbox", "Compose" };
+	private String additionalText[] = { "", "", "", "", "" };
 	
 	private int page = COURSE_PAGE;
 	private JPanel buttonPanels[] = new JPanel[NUM_PAGES];
 	private JLabel header;
-	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, 
-			studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn, dropboxBackBtn, gradeBtn, downloadBtn;
+	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, emailBtn, sendBtn, 
+			studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn, dropboxBackBtn, gradeBtn, downloadBtn, cancelBtn;
 	private JCheckBox allStudentsChk;
+	private JPanel emailEditor, tablePanel;
 	private JTable table;
 
 	public ProfessorView(String name, TableModel table) {
@@ -73,6 +77,13 @@ public class ProfessorView extends JFrame {
 	
 	void selectPage(int page) {
 		header.setText(HEADERS[page] + additionalText[page]);
+		if (page == EMAIL_PAGE) {
+			remove(tablePanel);
+			add(emailEditor, BorderLayout.CENTER);
+		} else if (this.page == EMAIL_PAGE) {
+			remove(emailEditor);
+			add(tablePanel, BorderLayout.CENTER);
+		}
 		remove(buttonPanels[this.page]);
 		add(buttonPanels[page], BorderLayout.SOUTH);
 		repaint();
@@ -100,6 +111,18 @@ public class ProfessorView extends JFrame {
 			downloadBtn.setEnabled(false);
 			gradeBtn.setEnabled(false);
 		}
+	}
+	
+	void addEmailListener(ActionListener listener) {
+		emailBtn.addActionListener(listener);
+	}
+	
+	void addCancelListener(ActionListener listener) {
+		cancelBtn.addActionListener(listener);
+	}
+	
+	void addSendListener(ActionListener listener) {
+		sendBtn.addActionListener(listener);
 	}
 	
 	void addDownloadListener(ActionListener listener) {
@@ -163,6 +186,22 @@ public class ProfessorView extends JFrame {
 		add(createHeader(HEADERS[page] + additionalText[page]), BorderLayout.NORTH);
 		add(createTextArea(), BorderLayout.CENTER);
 		add(buttonPanels[page], BorderLayout.SOUTH);
+		emailEditor = createEmailEditor();
+	}
+	
+	private JPanel createEmailEditor() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
+		panel.add(createEmailHeader(), BorderLayout.NORTH);
+		panel.add(new JScrollPane(new JTextArea()), BorderLayout.CENTER);
+		return panel;
+	}
+	
+	private JPanel createEmailHeader() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new JLabel("  Subject: "), BorderLayout.WEST);
+		panel.add(new JTextField(20), BorderLayout.CENTER);
+		return panel;
 	}
 	
 	private void layoutButtonPanels() {
@@ -170,6 +209,7 @@ public class ProfessorView extends JFrame {
 		buttonPanels[ASSIGNMENT_PAGE] = createAssignmentButtons();
 		buttonPanels[STUDENT_PAGE] = createStudentButtons();
 		buttonPanels[DROPBOX_PAGE] = createDropboxButtons();
+		buttonPanels[EMAIL_PAGE] = createEmailButtons();
 	}
 
 	private JLabel createHeader(String title) {
@@ -183,10 +223,10 @@ public class ProfessorView extends JFrame {
 		table = new JTable();
 		table.setFillsViewportHeight(true);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JPanel scrollList = new JPanel(new BorderLayout());
-		scrollList.add(new JScrollPane(table), BorderLayout.CENTER);
-		scrollList.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-		return scrollList;
+		tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
+		tablePanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
+		return tablePanel;
 	}
 	
 	private JPanel createCourseButtons() {
@@ -211,7 +251,15 @@ public class ProfessorView extends JFrame {
 		allStudentsChk = addCheckBox(panel, "All");
 		panel.add(searchBtn = new JButton("Search"));
 		panel.add(clearSearchBtn = new JButton("Clear Search"));
+		panel.add(emailBtn = new JButton("Email"));
 		panel.add(studentsBackBtn = new JButton("Back"));
+		return panel;
+	}
+	
+	private JPanel createEmailButtons() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		panel.add(sendBtn = new JButton("Send"));
+		panel.add(cancelBtn = new JButton("Cancel"));
 		return panel;
 	}
 	

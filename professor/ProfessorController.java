@@ -75,6 +75,15 @@ public class ProfessorController implements Controller {
 		addDropboxBackHandler();
 		addDownloadHandler();
 		addGradeHandler();
+		addEmailHandler();
+	}
+	
+	private void addEmailHandler() {
+		view.addEmailListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				view.selectPage(ProfessorView.EMAIL_PAGE);
+			}
+		});
 	}
 	
 	private void addGradeHandler() {
