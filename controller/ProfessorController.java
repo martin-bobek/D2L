@@ -39,6 +39,7 @@ public class ProfessorController extends Controller {
 	
 	public ProfessorController(ProfessorView view, TableModel table, ServerConnection server) {
 		super(table, server);
+		server.addChatText(view.getChatArea());
 		table.reset(Course.PROF_ROW_PROPERTIES);
 		this.view = view;
 		subscribeHandlers();
@@ -84,12 +85,13 @@ public class ProfessorController extends Controller {
 					JOptionPane.showMessageDialog(view, "The content area cannot be empty!");
 				else if (subject.isEmpty())
 					JOptionPane.showMessageDialog(view, "The subject line cannot be empty!");
-				else
+				else {
 					server.sendObject(new EmailRequest(subject, content));
+					view.selectPage(ProfessorView.STUDENT_PAGE);
+				}
 				} catch (IOException ex) {
 					connectionLost(view);
 				}
-				view.selectPage(ProfessorView.STUDENT_PAGE);
 			}
 		});
 	}
@@ -97,7 +99,7 @@ public class ProfessorController extends Controller {
 	private void addEmailHandler() {
 		view.addEmailListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				view.clearEmail();
+				view.clearMessage();
 				view.selectPage(ProfessorView.EMAIL_PAGE);
 			}
 		});

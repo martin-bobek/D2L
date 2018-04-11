@@ -14,9 +14,9 @@ public class ProfessorView extends View {
 	private static final long serialVersionUID = 1L;
 	public static final int NO_SELECTION = -1;
 	public static final int COURSE_PAGE = 0;
-	public static final int ASSIGNMENT_PAGE = 2;
-	public static final int STUDENT_PAGE = 3;
-	public static final int DROPBOX_PAGE = 4;
+	public static final int ASSIGNMENT_PAGE = 3;
+	public static final int STUDENT_PAGE = 4;
+	public static final int DROPBOX_PAGE = 5;
 	
 	private JButton viewBtn, createCourseBtn, createAssignmentBtn, assignmentBackBtn, dropboxBtn, emailBtn,  
 			studentsBtn, studentsBackBtn, searchBtn, clearSearchBtn, dropboxBackBtn, gradeBtn, downloadBtn;
@@ -24,7 +24,7 @@ public class ProfessorView extends View {
 
 	public ProfessorView(String name, TableModel table) {
 		super("Professor Client", table,
-			new String[] { "Courses", "Compose", "Assignments", "Students", "Dropbox" });
+			new String[] { "Courses", "Compose", "Chat", "Assignments", "Students", "Dropbox" });
 		setAdditionalText(name, COURSE_PAGE);
 	}
 	

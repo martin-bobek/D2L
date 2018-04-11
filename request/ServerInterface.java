@@ -27,4 +27,6 @@ public interface ServerInterface {
 	public void sendFile(char type, int id) throws IOException;
 	public void updateSubmission(Submission submission) throws SQLException;
 	public void sendEmail(String subject, String content) throws SQLException, MessagingException;
+	public void subscribeChat() throws SQLException, IOException;
+	public void submitMessage(String message) throws SQLException;
 }

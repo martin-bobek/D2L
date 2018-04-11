@@ -25,16 +25,17 @@ abstract public class View extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static final int HOME_PAGE = 0;
 	public static final int EMAIL_PAGE = 1;
+	public static final int CHAT_PAGE = 2;
 	private final String[] headers;
 	private final String[] addText;
 	
 	int page = HOME_PAGE;
 	JPanel[] buttonPanels;
 	JLabel header;
-	private JButton sendBtn, cancelBtn;
-	private JTextField subjectTxt;
-	private JTextArea emailContent;
-	private JPanel emailEditor, tablePanel;
+	private JButton sendBtn, cancelBtn, chatBackBtn, chatSubmitBtn;
+	private JTextField subjectTxt, messageTxt;
+	private JTextArea contentArea, chatArea;
+	private JPanel emailEditor, tablePanel, chatPanel;
 	private JTable table;
 	
 	View(String title, TableModel table, String[] headers) {
@@ -59,13 +60,7 @@ abstract public class View extends JFrame {
 	
 	public void selectPage(int page) {
 		header.setText(headers[page] + addText[page]);
-		if (page == EMAIL_PAGE) {
-			remove(tablePanel);
-			add(emailEditor, BorderLayout.CENTER);
-		} else if (this.page == EMAIL_PAGE) {
-			remove(emailEditor);
-			add(tablePanel, BorderLayout.CENTER);
-		}
+		specialTransitions(page);
 		remove(buttonPanels[this.page]);
 		add(buttonPanels[page], BorderLayout.SOUTH);
 		repaint();
@@ -73,8 +68,36 @@ abstract public class View extends JFrame {
 		itemDeselected();
 	}
 	
+	private void specialTransitions(int page) {
+		if (page == EMAIL_PAGE) {
+			remove(tablePanel);
+			add(emailEditor, BorderLayout.CENTER);
+		} else if (page == CHAT_PAGE) {
+			remove(tablePanel);
+			add(chatPanel, BorderLayout.CENTER);
+		} else if (this.page == EMAIL_PAGE) {
+			remove(emailEditor);
+			add(tablePanel, BorderLayout.CENTER);
+		} else if (this.page == CHAT_PAGE) {
+			remove(chatPanel);
+			add(tablePanel, BorderLayout.CENTER);
+		}
+	}
+	
 	public abstract void itemDeselected();
 	public abstract void itemSelected();
+	
+	public void setChatMessage(String str) {
+		messageTxt.setText(str);
+	}
+	
+	public JTextArea getChatArea() {
+		return chatArea;
+	}
+	
+	public String getChatMessage() {
+		return messageTxt.getText();
+	}
 	
 	public int getSelected() {
 		return table.getSelectedRow();
@@ -92,29 +115,44 @@ abstract public class View extends JFrame {
 		sendBtn.addActionListener(listener);
 	}
 	
+	public void addChatSubmitListener(ActionListener listener) {
+		chatSubmitBtn.addActionListener(listener);
+	}
+	
+	public void addChatBackListener(ActionListener listener) {
+		chatBackBtn.addActionListener(listener);
+	}
+	
 	public String getSubject() {
 		return subjectTxt.getText();
 	}
 	
 	public String getContent() {
-		return emailContent.getText();
+		return contentArea.getText();
 	}
 	
-	public void clearEmail() {
+	public void clearMessage() {
 		subjectTxt.setText("");
-		emailContent.setText("");
+		contentArea.setText("");
+	}
+	
+	public void clearChat() {
+		messageTxt.setText("");
+		chatArea.setText("");
 	}
 	
 	void layoutButtonPanels() {
 		buttonPanels[EMAIL_PAGE] = createEmailButtons();
+		buttonPanels[CHAT_PAGE] = createChatButtons();
 	}
-	
+
 	private void layoutFrame() {
 		layoutButtonPanels();
 		add(createHeader(), BorderLayout.NORTH);
 		add(createTextArea(), BorderLayout.CENTER);
 		add(buttonPanels[page], BorderLayout.SOUTH);
 		emailEditor = createEmailEditor();
+		chatPanel = createChatArea();
 	}
 	
 	private JPanel createTextArea() {
@@ -138,14 +176,30 @@ abstract public class View extends JFrame {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
 		panel.add(createEmailHeader(), BorderLayout.NORTH);
-		panel.add(new JScrollPane(emailContent = new JTextArea()), BorderLayout.CENTER);
+		panel.add(new JScrollPane(contentArea = new JTextArea()), BorderLayout.CENTER);
+		return panel;
+	}
+	
+	private JPanel createChatArea() {
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
+		panel.add(new JScrollPane(chatArea = new JTextArea()), BorderLayout.CENTER);
+		chatArea.setEditable(false);
+		panel.add(messageTxt = new JTextField(), BorderLayout.SOUTH);
 		return panel;
 	}
 	
 	private JPanel createEmailButtons() {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-		panel.add(sendBtn = new JButton("Send"));
 		panel.add(cancelBtn = new JButton("Cancel"));
+		panel.add(sendBtn = new JButton("Send"));
+		return panel;
+	}
+	
+	private JPanel createChatButtons() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+		panel.add(chatBackBtn = new JButton("Back"));
+		panel.add(chatSubmitBtn = new JButton("Submit"));
 		return panel;
 	}
 	

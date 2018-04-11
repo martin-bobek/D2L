@@ -17,10 +17,12 @@ import data.Course;
 import data.Submission;
 import dialog.SubmissionDialog;
 import request.AssignmentRequest;
+import request.ChatSubmit;
 import request.CourseRequest;
 import request.EmailRequest;
 import request.FileRequest;
 import request.SubmissionUpdate;
+import request.SubscribeChat;
 import view.StudentView;
 
 public class StudentController extends Controller {
@@ -28,6 +30,7 @@ public class StudentController extends Controller {
 	
 	public StudentController(StudentView view, TableModel table, ServerConnection server) {
 		super(table, server);
+		server.addChatText(view.getChatArea());
 		table.reset(Course.STUDENT_ROW_PROPERTIES);
 		this.view = view;
 		subscribeHandlers();
@@ -43,6 +46,54 @@ public class StudentController extends Controller {
 		addEmailHandler();
 		addSendHandler();
 		addCancelHandler();
+		addChatHandler();
+		addChatBackHandler();
+		addChatSubmitHandler();
+	}
+	
+	private void addChatSubmitHandler() {
+		view.addChatSubmitListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message = view.getChatMessage();
+				if (message.isEmpty())
+					return;
+				try {
+					if (message.length() > 255)
+						JOptionPane.showMessageDialog(view, "Chat messages must be less than 255 characters!");
+					else {
+						server.sendObject(new ChatSubmit(message));
+						view.setChatMessage("");
+					}
+				} catch (IOException ex) {
+					connectionLost(view);
+				}
+			}
+		});
+	}
+	
+	
+	private void addChatBackHandler() {
+		view.addChatBackListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				view.selectPage(StudentView.ASSIGNMENT_PAGE);
+			}
+		});
+	}
+	
+	private void addChatHandler() {
+		view.addChatListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!locked.compareAndSet(false, true))
+					return;
+				view.selectPage(StudentView.CHAT_PAGE);
+				view.clearChat();
+				try {
+					server.sendObject(new SubscribeChat());
+				} catch (IOException ex) {
+					connectionLost(view);
+				}
+			}
+		});
 	}
 	
 	private void addCancelHandler() {
@@ -59,16 +110,17 @@ public class StudentController extends Controller {
 				String subject = view.getSubject();
 				String content = view.getContent();
 				try {
-				if (content.isEmpty())
-					JOptionPane.showMessageDialog(view, "The content area cannot be empty!");
-				else if (subject.isEmpty())
-					JOptionPane.showMessageDialog(view, "The subject line cannot be empty!");
-				else
-					server.sendObject(new EmailRequest(subject, content));
+					if (content.isEmpty())
+						JOptionPane.showMessageDialog(view, "The content area cannot be empty!");
+					else if (subject.isEmpty())
+						JOptionPane.showMessageDialog(view, "The subject line cannot be empty!");
+					else {
+						server.sendObject(new EmailRequest(subject, content));
+						view.selectPage(StudentView.ASSIGNMENT_PAGE);
+					}
 				} catch (IOException ex) {
 					connectionLost(view);
 				}
-				view.selectPage(StudentView.ASSIGNMENT_PAGE);
 			}
 		});
 	}
@@ -76,7 +128,7 @@ public class StudentController extends Controller {
 	private void addEmailHandler() {
 		view.addEmailListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				view.clearEmail();
+				view.clearMessage();
 				view.selectPage(StudentView.EMAIL_PAGE);
 			}
 		});

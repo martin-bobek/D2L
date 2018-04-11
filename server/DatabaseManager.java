@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import data.Assignment;
+import data.ChatMessage;
 import data.Course;
 import data.LoginCredentials;
 import data.Student;
@@ -215,5 +216,35 @@ class DatabaseManager implements SqlQueries {
 		while (results.next())
 			emails.add(results.getString(1));
 		return emails;
+	}
+
+	ChatMessage getMessage(int messageId, int courseId) throws SQLException {
+		if (courseId != this.courseId)
+			return null;
+		PreparedStatement statement = connection.prepareStatement(CHAT_ID_MESSAGE);
+		statement.setInt(1, messageId);
+		results = statement.executeQuery();
+		if (!results.next())
+			return null;
+		return new ChatMessage(results.getString(1) + ' ' + results.getString(2), results.getString(3));
+	}
+
+	ArrayList<ChatMessage> getAllMessages() throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(CHAT_ALL_MESSAGES);
+		statement.setInt(1, courseId);
+		results = statement.executeQuery();
+		ArrayList<ChatMessage> messages = new ArrayList<ChatMessage>();
+		while (results.next())
+			messages.add(new ChatMessage(results.getString(1) + ' ' + results.getString(2), results.getString(3)));
+		return messages;
+	}
+
+	int addMessage(String message) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(SUBMIT_MESSAGE);
+		statement.setInt(1, userId);
+		statement.setInt(2, courseId);
+		statement.setString(3, message);
+		statement.executeUpdate();
+		return courseId;
 	}
 }

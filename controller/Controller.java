@@ -15,7 +15,7 @@ public abstract class Controller {
 	final TableModel table;
 	final ServerConnection server;
 	final FileHelper fileHelper;
-	final AtomicBoolean locked;
+	final AtomicBoolean locked;			/// TODO - The locking mechanism is broken by the chat messages
 	
 	Controller(TableModel table, ServerConnection server) {
 		server.addTable(table);

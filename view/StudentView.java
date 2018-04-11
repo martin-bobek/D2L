@@ -13,14 +13,14 @@ public class StudentView extends View {
 	private static final long serialVersionUID = 1L;
 	public static final int NO_SELECTION = -1;
 	public static final int COURSE_PAGE = 0;
-	public static final int ASSIGNMENT_PAGE = 2;
+	public static final int ASSIGNMENT_PAGE = 3;
 	
-	private JButton courseViewBtn, assignmentBackBtn, downloadBtn, submitBtn, emailBtn;
+	private JButton courseViewBtn, assignmentBackBtn, downloadBtn, submitBtn, emailBtn, chatBtn;
 	private TableModel tableModel;
 
 	public StudentView(String name, TableModel table) {
 		super("Student Client", table, 
-			new String[] { "Courses", "Compose", "Assignments" });
+			new String[] { "Courses", "Compose", "Chat", "Assignments" });
 		setAdditionalText(name, COURSE_PAGE);
 		tableModel = table;
 	}
@@ -41,6 +41,10 @@ public class StudentView extends View {
 			downloadBtn.setEnabled(false);
 			submitBtn.setEnabled(false);
 		}
+	}
+	
+	public void addChatListener(ActionListener listener) {
+		chatBtn.addActionListener(listener);
 	}
 	
 	public void addEmailListener(ActionListener listener) {
@@ -73,6 +77,7 @@ public class StudentView extends View {
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.add(downloadBtn = new JButton("Download"));
 		panel.add(submitBtn = new JButton("Submit"));
+		panel.add(chatBtn = new JButton("Chat"));
 		panel.add(emailBtn = new JButton("Email"));
 		panel.add(assignmentBackBtn = new JButton("Back"));
 		return panel;

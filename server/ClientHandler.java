@@ -12,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import data.Assignment;
+import data.ChatMessage;
 import data.Course;
 import data.LoginCredentials;
 import data.Student;
@@ -19,6 +20,7 @@ import data.Submission;
 import request.Request;
 import request.ServerInterface;
 import request.StudentRequest;
+import response.ChatUpdate;
 import response.FileDelivery;
 import response.TableUpdate;
 
@@ -29,18 +31,21 @@ public class ClientHandler implements Runnable, ServerInterface {
 	private DatabaseManager database;
 	private FileManager files;
 	private EmailSender email;
+	private ChatEventDistributor chatEvents;
 	
-	ClientHandler(Socket socket) throws IOException, SQLException {
+	ClientHandler(Socket socket, ChatEventDistributor chatEvents) throws IOException, SQLException {
 		output = new ObjectOutputStream(socket.getOutputStream());
 		input = new ObjectInputStream(socket.getInputStream());
 		database = new DatabaseManager();
 		files = new FileManager(FILE_STORAGE);
 		email = new EmailSender();
+		this.chatEvents = chatEvents;
 	}
 	
 	public void run() {
 		try {
 			login();
+			chatEvents.subscribe(this);
 			while (true) {
 				Request request = (Request)input.readObject();
 				request.performAction(this);
@@ -49,7 +54,30 @@ public class ClientHandler implements Runnable, ServerInterface {
 			System.out.println("Client disconnected.");
 		} catch (SQLException | ClassNotFoundException | ParseException | IOException | MessagingException e) {
 			System.err.println("Error 2: " + e.getMessage());
+		} finally {
+			chatEvents.unsubsibe(this);
 		}
+	}
+	
+	public void newMessage(int messageId, int courseId) {
+		try {
+			ChatMessage message = database.getMessage(messageId, courseId);
+			if (message != null)
+				output.writeObject(new ChatUpdate(message));
+		} catch (SQLException | IOException e) {
+			System.err.println("Error 3: " + e.getMessage());
+		}
+	}
+	
+	public void subscribeChat() throws SQLException, IOException {
+		ChatUpdate update = new ChatUpdate(database.getAllMessages());
+		output.writeObject(update);
+	}
+	
+	public void submitMessage(String message) throws SQLException {
+		int courseId = database.addMessage(message);
+		int messageId = database.getLastId();
+		chatEvents.notifyMessage(messageId, courseId);
 	}
 	
 	public void selectCourse(int courseId) {

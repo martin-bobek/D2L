@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.swing.JTextArea;
+
+import data.ChatMessage;
 import data.TableRow;
 import response.ClientInterface;
 import response.LoginResponse;
@@ -17,6 +20,7 @@ public class ServerConnection implements ClientInterface {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	private TableModel list;
+	private JTextArea chat;
 	private FileHelper files;
 	
 	public ServerConnection() throws IOException {
@@ -33,6 +37,10 @@ public class ServerConnection implements ClientInterface {
 		files = fileHelper;
 	}
 	
+	public void addChatText(JTextArea text) {
+		chat = text;
+	}
+	
 	public void receiveResponse() throws ClassNotFoundException, IOException {
 		Response response = (Response)input.readObject();
 		response.performAction(this);
@@ -41,6 +49,11 @@ public class ServerConnection implements ClientInterface {
 	public void updateTable(ArrayList<? extends TableRow> rows) {
 		for (TableRow element : rows)
 			list.addElement(element);
+	}
+	
+	public void appendChat(ArrayList<ChatMessage> messages) {
+		for (ChatMessage message : messages)
+			chat.append(message.toString());
 	}
 	
 	public void downloadFile(byte[] content) throws IOException {
