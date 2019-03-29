@@ -7,6 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * This class is used to save and upload files to and from the
+ * users computer. Part of the model component of the client.
+ * @author Martin
+ * @version 1.0
+ * @since April 11, 2018
+ */
 public class FileHelper {
 	private File file;
 	

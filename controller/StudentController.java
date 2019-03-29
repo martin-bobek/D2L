@@ -25,9 +25,24 @@ import request.SubmissionUpdate;
 import request.SubscribeChat;
 import view.StudentView;
 
+/**
+ * The controller for the student GUI.
+ * @author Martin
+ * @version 1.0
+ * @since April 11, 2018
+ */
 public class StudentController extends Controller {
+	/**
+	 * A handle to the student view.
+	 */
 	private StudentView view;
 	
+	/**
+	 * Creates a new student controller. All helper and model classes are created and initialized.
+	 * @param view The main view.
+	 * @param table The table model for the view.
+	 * @param server The server connection.
+	 */
 	public StudentController(StudentView view, TableModel table, ServerConnection server) {
 		super(table, server);
 		server.addChatText(view.getChatArea());
@@ -37,6 +52,9 @@ public class StudentController extends Controller {
 		view.setVisible(true);
 	}
 	
+	/**
+	 * Subscribes all the handler for view events.
+	 */
 	void subscribeHandlers() {
 		addSelectionHandler();
 		addCourseViewHandler();
@@ -51,6 +69,10 @@ public class StudentController extends Controller {
 		addChatSubmitHandler();
 	}
 	
+	/**
+	 * Creates a handler for the chat submit button event. Validates input 
+	 * and sends the new message to the server.
+	 */
 	private void addChatSubmitHandler() {
 		view.addChatSubmitListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -71,7 +93,10 @@ public class StudentController extends Controller {
 		});
 	}
 	
-	
+	/**
+	 * Creates a handler for the chat back button event. Changes the view
+	 * to the assignment page.
+	 */
 	private void addChatBackHandler() {
 		view.addChatBackListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -80,11 +105,14 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the chat button event. Changes the
+	 * view to the chat page and request the server to deliver all messages
+	 * for the chat.
+	 */
 	private void addChatHandler() {
 		view.addChatListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!locked.compareAndSet(false, true))
-					return;
 				view.selectPage(StudentView.CHAT_PAGE);
 				view.clearChat();
 				try {
@@ -96,6 +124,9 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the cancel button event. Selects the assignment page.
+	 */
 	private void addCancelHandler() {
 		view.addCancelListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -104,6 +135,11 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the send button event.
+	 * validates the content of the email and makes a request
+	 * for the server to send the email.
+	 */
 	private void addSendHandler() {
 		view.addSendListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -125,6 +161,10 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the email submit button event.
+	 * Clears the previous email message and selects the email page.
+	 */
 	private void addEmailHandler() {
 		view.addEmailListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -134,6 +174,11 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the submit button event. Creates a new dialog to
+	 * obtain information about the submitted file from the user. Then submits
+	 * the file to the server.
+	 */
 	private void addSubmitHandler() {
 		view.addSubmitListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -155,18 +200,18 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the download button event. Opens a new file picker view
+	 * to select a save location. Then retrieves the file from the server.
+	 */
 	private void addDownloadHandler() {
 		view.addDownloadListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!locked.compareAndSet(false, true))
-					return;
 				Assignment assignment = (Assignment)table.getRow(view.getSelected());
 				JFileChooser chooser = new JFileChooser();
 				chooser.setSelectedFile(new File(assignment.getTitle() + assignment.getExtension()));
-				if (chooser.showSaveDialog(view) != JFileChooser.APPROVE_OPTION) {
-					locked.set(false);
+				if (chooser.showSaveDialog(view) != JFileChooser.APPROVE_OPTION)
 					return;
-				}
 				fileHelper.setPath(chooser.getSelectedFile());
 				try {
 					server.sendObject(new FileRequest(assignment));
@@ -177,6 +222,11 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the assignment back submit button event.
+	 * Selects the course page and asks the server to send all the 
+	 * courses to display.
+	 */
 	private void addAssignmentBackHandler() {
 		view.addAssignmentBackListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -193,6 +243,10 @@ public class StudentController extends Controller {
 		});
 	}
 	
+	/**
+	 * Creates a handler for the course view button event. Selects the
+	 * assignment page and asks the server to send all the assignments to display.
+	 */
 	private void addCourseViewHandler() {
 		view.addCourseViewListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -200,6 +254,7 @@ public class StudentController extends Controller {
 					return;
 				Course course = (Course)table.getRow(view.getSelected());
 				view.setAdditionalText(course.getName(), StudentView.ASSIGNMENT_PAGE);
+				view.setAdditionalText(course.getName(), StudentView.CHAT_PAGE);
 				view.selectPage(StudentView.ASSIGNMENT_PAGE);
 				table.reset(Assignment.STUDENT_ROW_PROPERTIES);
 				try {
@@ -211,6 +266,10 @@ public class StudentController extends Controller {
 		});
 	}
 
+	/**
+	 * Creates a handler for the table selection event. Gets the GUI to enable/disable
+	 * the appropriate buttons in response to selection of entries in the table.
+	 */
 	private void addSelectionHandler() {
 		view.addSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {

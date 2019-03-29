@@ -10,7 +10,19 @@ import view.ProfessorView;
 import view.StudentView;
 import view.View;
 
+/**
+ * The main class for the client application. Used to login and start the program.
+ * @author Martin
+ * @version 1.0
+ * @since April 11, 2018
+ */
 class Client {
+	/**
+	 * The main function used to start the program. Creates a login window and attempts
+	 * to authenticate the user. If authentication is successful, the appropriate GUI
+	 * is created.
+	 * @param args Command line args, not used.
+	 */
 	public static void main(String[] args) {
 		View view = null;
 		try {
@@ -32,7 +44,6 @@ class Client {
 			}
 			controller.runClient();
 		} catch (Exception e) {
-			e.printStackTrace();
 			JOptionPane.showMessageDialog(view, "Fatal Error: " + e.getMessage());
 			System.exit(1);
 		}
