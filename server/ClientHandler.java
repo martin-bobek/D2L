@@ -11,18 +11,18 @@ import java.text.ParseException;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import data.Assignment;
-import data.ChatMessage;
-import data.Course;
-import data.LoginCredentials;
-import data.Student;
-import data.Submission;
-import request.Request;
-import request.ServerInterface;
-import request.StudentRequest;
-import response.ChatUpdate;
-import response.FileDelivery;
-import response.TableUpdate;
+import shared.data.Assignment;
+import shared.data.ChatMessage;
+import shared.data.Course;
+import shared.data.LoginCredentials;
+import shared.data.Student;
+import shared.data.Submission;
+import shared.request.Request;
+import shared.request.ServerInterface;
+import shared.request.StudentRequest;
+import shared.response.ChatUpdate;
+import shared.response.FileDelivery;
+import shared.response.TableUpdate;
 
 /**
  * A runnable class used to service the incoming requests of a particular client.

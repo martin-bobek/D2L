@@ -9,13 +9,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import data.Assignment;
-import data.ChatMessage;
-import data.Course;
-import data.LoginCredentials;
-import data.Student;
-import data.Submission;
-import response.LoginResponse;
+import shared.data.Assignment;
+import shared.data.ChatMessage;
+import shared.data.Course;
+import shared.data.LoginCredentials;
+import shared.data.Student;
+import shared.data.Submission;
+import shared.response.LoginResponse;
 
 /**
  * This class is used to connect the client handler to the database.

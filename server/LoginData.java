@@ -1,6 +1,6 @@
 package server;
 
-import response.LoginResponse;
+import shared.response.LoginResponse;
 
 /**
  * Holds user data from the user after a successful login.
